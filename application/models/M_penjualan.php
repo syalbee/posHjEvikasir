@@ -19,35 +19,80 @@ class M_penjualan extends CI_Model
 
     function simpan_retur($kobar, $nabar, $satuan, $harjul, $qty, $keterangan)
     {
-        $hsl = $this->db->query("INSERT INTO tbl_retur(retur_barang_id,retur_barang_nama,retur_barang_satuan,retur_harjul,retur_qty,retur_keterangan) VALUES ('$kobar','$nabar','$satuan','$harjul','$qty','$keterangan')");
+        $hsl = $this->db->query("INSERT INTO tbl_retur(retur_barang_id,retur_barang_nama,retur_barang_satuan,retur_harjul,retur_qty,retur_keterangan) 
+                                 VALUES ('$kobar','$nabar','$satuan','$harjul','$qty','$keterangan')");
         return $hsl;
+    }
+
+    function simpan_penjualannon($nofak, $total, $jml_uang, $kembalian)
+    {
+        $idadmin = $this->session->userdata('idadmin');
+
+        $dataJual = array(
+            "jual_nofak"      => $nofak,
+            "jual_total"      => $total,
+            "jual_jml_uang"   => $jml_uang,
+            "jual_kembalian"  => $kembalian,
+            "jual_user_id"    => $idadmin,
+            "jual_keterangan" => "nonmember",
+            "jual_member_id"  => NULL,
+            "jual_deskripsi"  => NULL,
+            "jual_status"     => "0"
+        );
+        $this->db->insert('tbl_jual', $dataJual);
+
+        foreach ($this->cart->contents() as $item) {
+            $data = array(
+                'd_jual_nofak'          =>    $nofak,
+                'd_jual_barang_id'      =>    $item['kodeBrg'],
+                'd_jual_barang_nama'    =>    $item['name'],
+                'd_jual_barang_satuan'  =>    $item['satuan'],
+                'd_jual_barang_harpok'  =>    $item['harpok'],
+                'd_jual_barang_harjul'  =>    $item['amount'],
+                'd_jual_qty'            =>    $item['qty'],
+                'd_jual_diskon'         =>    $item['disc'],
+                'd_jual_total'          =>    $item['subtotal']
+            );
+            $this->db->insert('tbl_detail_jual', $data);
+            $this->_hitungQty($item['kodeBrg'], $item['qty'],  $item['jenis']);
+        }
+
+        return true;
     }
 
     function simpan_penjualan($nofak, $total, $jml_uang, $kembalian, $pelanggan, $pesan, $stsBayar)
     {
         $idadmin = $this->session->userdata('idadmin');
-        if ($pelanggan != false) {
-            $this->db->query("INSERT INTO tbl_jual (jual_nofak,jual_total,jual_jml_uang,jual_kembalian,jual_user_id,jual_keterangan, jual_member_id, jual_deskripsi, jual_status) VALUES ('$nofak','$total','$jml_uang','$kembalian','$idadmin','eceran', '$pelanggan', '$pesan', '$stsBayar')");
-        } else {
-            $this->db->query("INSERT INTO tbl_jual (jual_nofak,jual_total,jual_jml_uang,jual_kembalian,jual_user_id,jual_keterangan, jual_member_id, jual_deskripsi, jual_status) VALUES ('$nofak','$total','$jml_uang','$kembalian','$idadmin','eceran', NULL, '$pesan', '$stsBayar')");
-        }
+
+        $dataJual = array(
+            "jual_nofak"      => $nofak,
+            "jual_total"      => $total,
+            "jual_jml_uang"   => $jml_uang,
+            "jual_kembalian"  => $kembalian,
+            "jual_user_id"    => $idadmin,
+            "jual_keterangan" => "member",
+            "jual_member_id"  => $this->_getIdmember($pelanggan),
+            "jual_deskripsi"  => $pesan,
+            "jual_status"     => $stsBayar
+        );
+        $this->db->insert('tbl_jual', $dataJual);
 
         foreach ($this->cart->contents() as $item) {
             $data = array(
-                'd_jual_nofak'             =>    $nofak,
-                'd_jual_barang_id'        =>    $item['kodeBrg'],
+                'd_jual_nofak'          =>    $nofak,
+                'd_jual_barang_id'      =>    $item['kodeBrg'],
                 'd_jual_barang_nama'    =>    $item['name'],
-                'd_jual_barang_satuan'    =>    $item['satuan'],
-                'd_jual_barang_harpok'    =>    $item['harpok'],
-                'd_jual_barang_harjul'    =>    $item['amount'],
+                'd_jual_barang_satuan'  =>    $item['satuan'],
+                'd_jual_barang_harpok'  =>    $item['harpok'],
+                'd_jual_barang_harjul'  =>    $item['amount'],
                 'd_jual_qty'            =>    $item['qty'],
-                'd_jual_diskon'            =>    $item['disc'],
-                'd_jual_total'            =>    $item['subtotal']
+                'd_jual_diskon'         =>    $item['disc'],
+                'd_jual_total'          =>    $item['subtotal']
             );
             $this->db->insert('tbl_detail_jual', $data);
-            $this->_hitungQty($item['id'], $item['qty']);
-            // $this->db->query("update tbl_barang set barang_stok=barang_stok-'$this->_hitungQty($idbar, $item[qty])' where barang_id='$item[id]'");
+            $this->_hitungQty($item['kodeBrg'], $item['qty'],  $item['jenis']);
         }
+
         return true;
     }
 
@@ -63,36 +108,8 @@ class M_penjualan extends CI_Model
         } else {
             $kd = "000001";
         }
-        
-        return date('dmy') . $kd;
-    }
 
-    //=====================Penjualan grosir================================
-    function simpan_penjualan_grosir($nofak, $total, $jml_uang, $kembalian, $pelanggan, $pesan, $stsBayar)
-    {
-        $idadmin = $this->session->userdata('idadmin');
-        if ($pelanggan != false) {
-            $this->db->query("INSERT INTO tbl_jual (jual_nofak,jual_total,jual_jml_uang,jual_kembalian,jual_user_id,jual_keterangan, jual_member_id, jual_deskripsi, jual_status) VALUES ('$nofak','$total','$jml_uang','$kembalian','$idadmin','grosir', '$pelanggan', '$pesan', '$stsBayar')");
-        } else {
-            $this->db->query("INSERT INTO tbl_jual (jual_nofak,jual_total,jual_jml_uang,jual_kembalian,jual_user_id,jual_keterangan, jual_member_id, jual_deskripsi, jual_status) VALUES ('$nofak','$total','$jml_uang','$kembalian','$idadmin','grosir', NULL, '$pesan', '$stsBayar')");
-        }
-        // $this->db->query("INSERT INTO tbl_jual (jual_nofak,jual_total,jual_jml_uang,jual_kembalian,jual_user_id,jual_keterangan) VALUES ('$nofak','$total','$jml_uang','$kembalian','$idadmin','grosir')");
-        foreach ($this->cart->contents() as $item) {
-            $data = array(
-                'd_jual_nofak'             =>    $nofak,
-                'd_jual_barang_id'        =>    $item['id'],
-                'd_jual_barang_nama'    =>    $item['name'],
-                'd_jual_barang_satuan'    =>    $item['satuan'],
-                'd_jual_barang_harpok'    =>    $item['harpok'],
-                'd_jual_barang_harjul'    =>    $item['amount'],
-                'd_jual_qty'            =>    $item['qty'],
-                'd_jual_diskon'            =>    $item['disc'],
-                'd_jual_total'            =>    $item['subtotal']
-            );
-            $this->db->insert('tbl_detail_jual', $data);
-            $this->db->query("update tbl_barang set barang_stok=barang_stok-'$item[qty]' where barang_id='$item[id]'");
-        }
-        return true;
+        return date('dmy') . $kd;
     }
 
     function cetak_faktur()
@@ -102,13 +119,21 @@ class M_penjualan extends CI_Model
         return $hsl;
     }
 
-
-    private function _hitungQty($id, $qty)
+    private function _hitungQty($id, $qty, $jenis)
     {
-		$this->db->where('barang_id', $id);
-		$qtyBarang = $this->db->get('tbl_barang')->result_array()[0]['barang_min_stok'];
+        $this->db->where('barang_id', $id);
+        $qtyBarang = $this->db->get('tbl_barang')->result_array()[0]['barang_min_stok'];
 
-        $jumlah =  $qty / $qtyBarang;
-        $this->db->query("update tbl_barang set barang_stok=barang_stok-$jumlah where barang_id='$id'");
+        if ($jenis === "grosir") {
+            $jumlah =  $qty;
+        } else {
+            $jumlah =  $qty / $qtyBarang;
+        }
+        $this->db->query("UPDATE tbl_barang SET barang_stok = barang_stok -$jumlah WHERE barang_id='$id'");
+    }
+
+    private function _getIdmember($kode)
+    {
+       return $this->db->query("SELECT id FROM tbl_member WHERE kode = '$kode'")->result_array()[0]['id'];
     }
 }

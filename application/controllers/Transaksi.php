@@ -271,6 +271,7 @@ class Transaksi extends CI_Controller
 		if (empty($this->input->post('id'))) {
 			echo "nonmember";
 		} else {
+			$this->session->set_userdata('trMemberid', $this->input->post('id'));
 			echo "member";
 		}
 	}

@@ -5,7 +5,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1><?= $title; ?></h1>
+                    <h1><?= $title . "_" . $member; ?></h1>
 
                 </div>
             </div>
@@ -18,7 +18,7 @@
         <div class="container-fluid">
             <div class="card">
                 <div class="card-header">
-                    <a href="<?= base_url('transaksi_nonmember/resetcart'); ?>" class="btn btn-sm btn-danger">Reset Form</a>
+                    <a href="<?= base_url('transaksi_member/resetcart'); ?>" class="btn btn-sm btn-danger">Reset Form</a>
                     <br>
                     <hr>
                     <form id="addTocartjual">
@@ -60,7 +60,7 @@
                 </div>
             </div>
 
-            <form action="<?= base_url('transaksi_nonmember/simpan_penjualan'); ?>" method="POST">
+            <form action="<?= base_url('transaksi_member/simpan_penjualan'); ?>" method="POST">
                 <table>
                     <tr>
                         <td style="width:760px;" rowspan="2"><button type="submit" class="btn btn-info btn-lg">Simpan</button></td>
@@ -77,6 +77,23 @@
                         <td></td>
                         <th>Kembalian(Rp)</th>
                         <th style="text-align:right;"><input type="text" id="kembalian" name="kembalian" class="form-control input-sm" style="text-align:right;margin-bottom:5px;" readonly></th>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <th>Set Total</th>
+                        <th style="text-align:center;">
+                            <br>
+                            <input type="checkbox" class="form-check-input" id="setTotal" name="setTotal">
+                            <label class="form-check-label" for="setTotal">Set Total</label>
+                        </th>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <th>Catatan</th>
+                        <th style="text-align:right;">
+                            <br>
+                            <textarea cols="25" rows="3" id="message" name="message"></textarea>
+                        </th>
                     </tr>
                 </table>
             </form>
@@ -175,7 +192,7 @@
         $("#kode_brg")[0].focus();
         $.ajax({
             type: "GET",
-            url: "<?php echo base_url('transaksi_nonmember/readtotal'); ?>",
+            url: "<?php echo base_url('transaksi_member/readtotal'); ?>",
             success: function(msg) {
                 console.log(msg);
                 $('#total').val(msg);
@@ -235,7 +252,7 @@
 
 
     // reload dat from chart
-    $('#detail_cart').load("<?= site_url('transaksi_nonmember/read'); ?>");
+    $('#detail_cart').load("<?= site_url('transaksi_member/read'); ?>");
     resultHasil();
     window.onload = onLoadPage();
 
@@ -293,7 +310,7 @@
             };
             $.ajax({
                 type: "POST",
-                url: "<?php echo base_url('transaksi_nonmember/get_barang'); ?>",
+                url: "<?php echo base_url('transaksi_member/get_barang'); ?>",
                 data: kobar,
                 success: function(msg) {
                     const obj = JSON.parse(msg);
@@ -323,7 +340,7 @@
                 jenisTransaksi = "eceran";
             }
             $.ajax({
-                url: "<?= base_url('transaksi_nonmember/add_to_cart'); ?>",
+                url: "<?= base_url('transaksi_member/add_to_cart'); ?>",
                 type: "POST",
                 data: {
                     jenisTR: jenisTransaksi,
@@ -332,7 +349,7 @@
                 },
                 success: (a) => {
                     cekGrosir = false;
-                    $('#detail_cart').load("<?= site_url('transaksi_nonmember/read'); ?>");
+                    $('#detail_cart').load("<?= site_url('transaksi_member/read'); ?>");
                     resultHasil();
                     $("#showBRGKg").modal("hide");
                     $('#kode_brg').empty();
@@ -354,7 +371,7 @@
             var brgqty = currentRow.find('#etqty').val();
 
             $.ajax({
-                url: "<?php echo base_url(); ?>transaksi_nonmember/edit",
+                url: "<?php echo base_url(); ?>transaksi_member/edit",
                 method: "POST",
                 data: {
                     diskon: brgdisc,
@@ -363,7 +380,7 @@
                     row_id: brgid
                 },
                 success: function(data) {
-                    $('#detail_cart').load("<?= site_url('transaksi_nonmember/read'); ?>");
+                    $('#detail_cart').load("<?= site_url('transaksi_member/read'); ?>");
                     resultHasil();
                 }
             });
@@ -374,13 +391,13 @@
     $(document).on('click', '.hapus_cart', function() {
         var row_id = $(this).attr("id"); //mengambil row_id dari artibut id
         $.ajax({
-            url: "<?php echo base_url(); ?>transaksi_nonmember/remove",
+            url: "<?php echo base_url(); ?>transaksi_member/remove",
             method: "POST",
             data: {
                 row_id: row_id
             },
             success: function(data) {
-                $('#detail_cart').load("<?= site_url('transaksi_nonmember/read'); ?>");
+                $('#detail_cart').load("<?= site_url('transaksi_member/read'); ?>");
                 resultHasil();
             }
         });
@@ -393,6 +410,22 @@
             $("#kode_brg")[0].focus();
         }
     }
+
+    // Set total kembalian
+    $(document).ready(function() {
+        $('#setTotal').change(function() {
+            var varSettotal = $('input[name="setTotal"]:checked').length > 0;
+            if (varSettotal != false) {
+                var totalValue = $('#total').val();
+                $('#jml_uang').val(totalValue);
+                $('#jml_uang2').val(totalValue);
+
+                // set kembalian
+                $('#kembalian').val(totalValue - $('#jml_uang2').val());
+                console.log(totalValue);
+            }
+        });
+    });
 </script>
 
 </body>

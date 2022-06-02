@@ -159,46 +159,43 @@ class Transaksi_nonmember extends CI_Controller
 	{
 		if ($this->session->userdata('akses') == '1' || $this->session->userdata('akses') == '2') {
 			$total = $this->input->post('total');
-			$pesan = $this->input->post('message');
-			$stsBayar = $this->input->post('setTotal');
 			$jml_uang = str_replace(",", "", $this->input->post('jml_uang'));
 			$kembalian = $jml_uang - $total;
 			
 			if (!empty($total) && !empty($jml_uang)) {
 				if ($jml_uang < $total) {
-					echo $this->session->set_flashdata('msg', '<label class="label label-danger">Jumlah Uang yang anda masukan Kurang</label>');
-					redirect('penjualan');
+					echo $this->session->set_flashdata('msgTransaksi', 'gagal');
+					redirect('transaksi_nonmember');
 				} else {
 					$nofak = $this->m_penjualan->get_nofak();
 					$this->session->set_userdata('nofak', $nofak);
-					$order_proses = $this->m_penjualan->simpan_penjualan($nofak, $total, $jml_uang, $kembalian, $pelanggan, $pesan, $stsBayar);
+					$order_proses = $this->m_penjualan->simpan_penjualannon($nofak, $total, $jml_uang, $kembalian);
 					if ($order_proses) {
 						$this->cart->destroy();
 						$this->session->unset_userdata('tglfak');
 						$this->session->unset_userdata('nofak');
 						$this->session->unset_userdata('suplier');
-						$this->session->set_flashdata('msgpenjualan', $nofak);
+						$this->session->set_flashdata('msgTransaksi', $nofak);
 
-						// redirect('cetak/struk/' . $nofak);
 						$data = [
-							'title' => "Penjualan",
+							'title' => "Transaksi Non Member",
 							'toko' => "Toko Hj Evi",
 							'nama' => $this->session->userdata('nama'),
 							'token' => $nofak,
-							'jenis' => 'eceran'
+							'jenis' => 'nonmember'
 						];
+
 						$this->load->view('template/header', $data);
 						$this->load->view('template/sidebar', $data);
-						$this->load->view('penjualan/alert_sukses', $data);
-						// $this->load->view('admin/alert/alert_sukses');
+						$this->load->view('transaksi/alert_sukses', $data);
 
 					} else {
-						redirect('penjualan');
+						redirect('transaksi_nonmember');
 					}
 				}
 			} else {
-				echo $this->session->set_flashdata('msg', '<label class="label label-danger">Penjualan Gagal di Simpan, Mohon Periksa Kembali Semua Inputan Anda!</label>');
-				redirect('penjualan');
+				echo $this->session->set_flashdata('msg', '<label class="label label-danger">Transaksi Gagal di Simpan, Mohon Periksa Kembali Semua Inputan Anda!</label>');
+				redirect('transaksi_nonmember');
 			}
 		} else {
 			echo "Halaman tidak ditemukan";
