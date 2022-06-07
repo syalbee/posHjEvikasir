@@ -10,7 +10,7 @@ class Laporan extends CI_Controller
             $url = base_url();
             redirect($url);
         };
-        
+
         $this->load->model('m_kategori');
         $this->load->model('m_barang');
         $this->load->model('m_suplier');
@@ -66,7 +66,7 @@ class Laporan extends CI_Controller
     {
         $tanggal = $this->input->post('tgl');
         $tanggal = date("Y-m-d", strtotime($tanggal));
-
+        $tanggal = "2022-06-02";
         $x['jml'] = $this->m_laporan->get_data__total_jual_pertanggal($tanggal);
         $x['data'] = $this->m_laporan->get_data_jual_pertanggal($tanggal);
         $this->load->view('laporan/lap_jual_pertanggal', $x);
@@ -130,61 +130,65 @@ class Laporan extends CI_Controller
         }
     }
 
-    public function readLapeceran()
+    public function readLapmember()
     {
         header('Content-type: application/json');
         $iterasi = 1;
-        if ($this->m_laporan->readEceran()->num_rows() > 0) {
-            foreach ($this->m_laporan->readEceran()->result() as $lapEcer) {
-                $idTran = (string)$lapEcer->jual_nofak;
-                $data[] = array(
-                    'no' => $iterasi++,
-                    'jual_nofak' => $idTran,
-                    'jual_tanggal' => $lapEcer->jual_tanggal,
-                    'jual_total' => $lapEcer->jual_total,
-                    'jual_jml_uang' => $lapEcer->jual_jml_uang,
-                    'jual_kembalian' => $lapEcer->jual_kembalian,
-                    'petugas' => $this->getPetugas($lapEcer->jual_user_id),
-                    'note' => $lapEcer->jual_deskripsi,
-                    'sts' => $lapEcer->jual_status === '1' ? "<h6 class='alert alert-danger'>Hutang</h6>" : "<h6 class='alert alert-success'>Lunas</h6>",
-                    'action' => '<button class="btn btn-sm btn-warning" onclick="detail(\'' . $lapEcer->jual_nofak . '\')"><i class="fas fa-edit"></i></button> &nbsp; <button class="btn btn-sm btn-primary" onclick="lunas(\'' . $lapEcer->jual_nofak . '\')"><i class="fas fa-check"></i></button>',
-                );
+        if ($this->m_laporan->readMember()->num_rows() > 0) {
+            foreach ($this->m_laporan->readMember()->result() as $lapMember) {
+                if (!empty($lapMember->jual_member_id)) {
+                    $idTran = (string)$lapMember->jual_nofak;
+                    $data[] = array(
+                        'no' => $iterasi++,
+                        'member' => $this->_getMeber($lapMember->jual_member_id),
+                        'jual_nofak' => $idTran,
+                        'jual_tanggal' => $lapMember->jual_tanggal,
+                        'jual_total' => $lapMember->jual_total,
+                        'jual_jml_uang' => $lapMember->jual_jml_uang,
+                        'jual_kembalian' => $lapMember->jual_kembalian,
+                        'petugas' => $this->getPetugas($lapMember->jual_user_id),
+                        'note' => $lapMember->jual_deskripsi,
+                        'sts' => $lapMember->jual_status === '1' ? "<h6 class='alert alert-danger'>Hutang</h6>" : "<h6 class='alert alert-success'>Lunas</h6>",
+                        'action' => '<button class="btn btn-sm btn-warning" onclick="detail(\'' . $lapMember->jual_nofak . '\')"><i class="fas fa-edit"></i></button> &nbsp; <button class="btn btn-sm btn-primary" onclick="lunas(\'' . $lapMember->jual_nofak . '\')"><i class="fas fa-check"></i></button>',
+                    );
+                }
             }
         } else {
             $data = array();
         }
-        $lapEcer = array(
+        $lapdataMember = array(
             'data' => $data
         );
-        echo json_encode($lapEcer);
+        echo json_encode($lapdataMember);
     }
 
-    public function readLapgrosir()
+    public function readLapnonmember()
     {
         header('Content-type: application/json');
         $iterasi = 1;
-        if ($this->m_laporan->readGrosir()->num_rows() > 0) {
-            foreach ($this->m_laporan->readGrosir()->result() as $lapEcer) {
-                $data[] = array(
-                    'no' => $iterasi++,
-                    'jual_nofak' => $lapEcer->jual_nofak,
-                    'jual_tanggal' => $lapEcer->jual_tanggal,
-                    'jual_total' => $lapEcer->jual_total,
-                    'jual_jml_uang' => $lapEcer->jual_jml_uang,
-                    'jual_kembalian' => $lapEcer->jual_kembalian,
-                    'petugas' => $this->getPetugas($lapEcer->jual_user_id),
-                    'note' => $lapEcer->jual_deskripsi,
-                    'sts' => $lapEcer->jual_status === '1' ? "<h6 class='alert alert-danger'>Hutang</h6>" : "<h6 class='alert alert-success'>Lunas</h6>",
-                    'action' => '<button class="btn btn-sm btn-warning" onclick="detail(\'' . $lapEcer->jual_nofak . '\')"><i class="fas fa-edit"></i></button> &nbsp; <button class="btn btn-sm btn-primary" onclick="lunas(\'' . $lapEcer->jual_nofak . '\')"><i class="fas fa-check"></i></button>',
-                );
+        if ($this->m_laporan->readnonMember()->num_rows() > 0) {
+            foreach ($this->m_laporan->readnonMember()->result() as $all) {
+                if (empty($all->jual_member_id)) {
+                    $idTran = (string)$all->jual_nofak;
+                    $data[] = array(
+                        'no' => $iterasi++,
+                        'jual_nofak' => $idTran,
+                        'jual_tanggal' => $all->jual_tanggal,
+                        'jual_total' => $all->jual_total,
+                        'jual_jml_uang' => $all->jual_jml_uang,
+                        'jual_kembalian' => $all->jual_kembalian,
+                        'petugas' => $this->getPetugas($all->jual_user_id),
+                        'action' => '<button class="btn btn-sm btn-warning" onclick="detail(\'' . $all->jual_nofak . '\')"><i class="fas fa-edit"></i></button> &nbsp; <button class="btn btn-sm btn-primary" onclick="lunas(\'' . $all->jual_nofak . '\')"><i class="fas fa-check"></i></button>',
+                    );
+                }
             }
         } else {
             $data = array();
         }
-        $lapEcer = array(
+        $lapdatanonMember = array(
             'data' => $data
         );
-        echo json_encode($lapEcer);
+        echo json_encode($lapdatanonMember);
     }
 
     public function readDetail($readDetail)
@@ -225,5 +229,119 @@ class Laporan extends CI_Controller
     {
         $this->db->where('user_id', $id);
         return $this->db->get('tbl_user')->result_array()[0]['user_nama'];
+    }
+
+
+    public function lapMember()
+    {
+        if ($this->session->userdata('akses') == '1') {
+
+            $data = [
+                'title' => "Laporan Penjualan Member",
+                'toko' => $this->db->get('tbl_toko')->result_array()[0]['nama'],
+                'nama' => $this->session->userdata('nama'),
+            ];
+
+            $this->load->view('template/header', $data);
+            $this->load->view('template/sidebar', $data);
+            $this->load->view('laporan/member', $data);
+        } else {
+            echo "Halaman tidak ditemukan";
+        }
+    }
+
+    public function lapnonMember()
+    {
+        if ($this->session->userdata('akses') == '1') {
+
+            $data = [
+                'title' => "Laporan Penjualan Non Member",
+                'toko' => $this->db->get('tbl_toko')->result_array()[0]['nama'],
+                'nama' => $this->session->userdata('nama'),
+            ];
+
+            $this->load->view('template/header', $data);
+            $this->load->view('template/sidebar', $data);
+            $this->load->view('laporan/nonmember', $data);
+        } else {
+            echo "Halaman tidak ditemukan";
+        }
+    }
+
+    private function _getMeber($id)
+    {
+        $this->db->where('id', $id);
+        return $this->db->get('tbl_member')->result_array()[0]['nama'];
+    }
+
+
+    public function lapdBarang()
+    {
+        if ($this->session->userdata('akses') == '1') {
+
+            $data = [
+                'title' => "Laporan Data Barang",
+                'toko' => $this->db->get('tbl_toko')->result_array()[0]['nama'],
+                'nama' => $this->session->userdata('nama'),
+            ];
+
+            $this->load->view('template/header', $data);
+            $this->load->view('template/sidebar', $data);
+            $this->load->view('laporan/databarang', $data);
+        } else {
+            echo "Halaman tidak ditemukan";
+        }
+    }
+
+    public function lapHarian()
+    {
+        $tanggal = date("Y-m-d");
+        if ($this->session->userdata('akses') == '1') {
+
+            $data = [
+                'title' => "Laporan Penjualan Harian - " . date("D-M-Y"),
+                'toko' => $this->db->get('tbl_toko')->result_array()[0]['nama'],
+                'nama' => $this->session->userdata('nama'),
+                'totalJual' => $this->_pendapatanJual(date("Y-m-D"))
+            ];
+
+            $this->load->view('template/header', $data);
+            $this->load->view('template/sidebar', $data);
+            $this->load->view('laporan/lapharian', $data);
+        } else {
+            echo "Halaman tidak ditemukan";
+        }
+    }
+
+    public function getAlltrans()
+    {
+        header('Content-type: application/json');
+        $iterasi = 1;
+        if ($this->m_laporan->allTransaksi()->num_rows() > 0) {
+            foreach ($this->m_laporan->allTransaksi()->result() as $allTrans) {
+                $idTran = (string)$allTrans->jual_nofak;
+                $data[] = array(
+                    'no' => $iterasi++,
+                    'jual_nofak' => $idTran,
+                    'jual_tanggal' => $allTrans->jual_tanggal,
+                    'jual_total' => $allTrans->jual_total,
+                    'jual_jml_uang' => $allTrans->jual_jml_uang,
+                    'jual_kembalian' => $allTrans->jual_kembalian,
+                    'petugas' => $this->getPetugas($allTrans->jual_user_id),
+                    'action' => '<button class="btn btn-sm btn-warning" onclick="detail(\'' . $allTrans->jual_nofak . '\')"><i class="fas fa-edit"></i></button> &nbsp; <button class="btn btn-sm btn-primary" onclick="lunas(\'' . $allTrans->jual_nofak . '\')"><i class="fas fa-check"></i></button>',
+                );
+            }
+        } else {
+            $data = array();
+        }
+        $lapdatanonMember = array(
+            'data' => $data
+        );
+        echo json_encode($lapdatanonMember);
+    }
+
+    private function _pendapatanJual($tanggal)
+    {
+       return $this->db->query("SELECT SUM(jual_total) AS total FROM tbl_jual WHERE DATE(jual_tanggal) = '$tanggal'")->result_array()[0];
     }
 }

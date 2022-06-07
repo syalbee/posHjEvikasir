@@ -121,15 +121,15 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?= base_url('laporan/ecerankomplit'); ?>" class="nav-link">
+                            <a href="<?= base_url('laporan/lapmember'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Laporan Penjualan Eceran</p>
+                                <p>Penjualan Member</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?= base_url('laporan/grosirkomplit'); ?>" class="nav-link">
+                            <a href="<?= base_url('laporan/lapnonmember'); ?>" class="nav-link">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Laporan Penjualan Grosir</p>
+                                <p>Penjualan Non Member</p>
                             </a>
                         </li>
                     </ul>

@@ -100,10 +100,18 @@ class M_laporan extends CI_Model
     }
 
     // Buat read laporan eceran dan grosir
-    function readEceran()
+    function readMember()
     {
         $this->db->from('tbl_jual');
-        $this->db->where('jual_keterangan', 'eceran');
+        $this->db->where('jual_keterangan', 'member');
+        $this->db->order_by("jual_tanggal", "DESC");
+        return $this->db->get();
+    }
+
+    function readnonMember()
+    {
+        $this->db->from('tbl_jual');
+        $this->db->where('jual_keterangan', 'nonmember');
         $this->db->order_by("jual_tanggal", "DESC");
         return $this->db->get();
     }
@@ -120,5 +128,12 @@ class M_laporan extends CI_Model
     {
         $this->db->where('d_jual_nofak', $nofak);
         return $this->db->get('tbl_detail_jual');
+    }
+
+    public function allTransaksi()
+    {
+        $this->db->from('tbl_jual');
+        $this->db->order_by("jual_tanggal", "DESC");
+        return $this->db->get();
     }
 }

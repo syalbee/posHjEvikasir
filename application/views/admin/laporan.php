@@ -18,7 +18,7 @@
             <div class="row">
                 <div class="col-md-3 col-sm-6 col-12">
                     <div class="info-box">
-                        <a href="<?php echo base_url() . 'laporan/lap_data_barang' ?>" target="_blank" class="info-box-icon btn btn-primary"><i class="fas fa-boxes"></i></a>
+                        <a href="<?php echo base_url() . 'laporan/lapdbarang' ?>" class="info-box-icon btn btn-primary"><i class="fas fa-boxes"></i></a>
                         <div class="info-box-content">
                             <span class="info-box-text">Laporan Data Barang</span>
                             <!-- <span class="info-box-number">1,410</span> -->
@@ -30,10 +30,10 @@
                 <!-- /.col -->
                 <div class="col-md-3 col-sm-6 col-12">
                     <div class="info-box">
-                        <a href="<?php echo base_url() . 'laporan/lap_stok_barang' ?>" target="_blank" class="info-box-icon btn btn-primary"><i class="fas fa-layer-group"></i></a>
+                        <a href="<?php echo base_url() . 'laporan/lapharian' ?>" class="info-box-icon btn btn-primary"><i class="fas fa-layer-group"></i></a>
 
                         <div class="info-box-content">
-                            <span class="info-box-text">Laporan Stok Barang</span>
+                            <span class="info-box-text">Laporan Penjualan Hari Ini</span>
                             <!-- <span class="info-box-number">410</span> -->
                         </div>
                         <!-- /.info-box-content -->

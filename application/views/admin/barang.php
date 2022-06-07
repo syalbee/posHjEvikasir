@@ -26,8 +26,8 @@
                             <tr>
                                 <th style="text-align:center;width:40px;">ID</th>
                                 <th>Nama</th>
-                                <th>H Pk  Grosir</th>
-                                <th>H Pk Eceran</th>
+                                <th>HPP Grosir</th>
+                                <th>HPP Eceran</th>
                                 <th>H Jl Grosir </th>
                                 <th>H Jl Eceran</th>
                                 <th>H Jl Grosir Mbr</th>

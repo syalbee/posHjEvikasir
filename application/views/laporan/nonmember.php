@@ -22,12 +22,10 @@
                                 <th>No</th>
                                 <th>No Faktur</th>
                                 <th>Tanggal</th>
-                                <th>Jual Total</th>
-                                <th>Jumlah Uang</th>
-                                <th>Jumlah Kembalian</th>
+                                <th>Total</th>
+                                <th>Uang</th>
+                                <th>Kembalian</th>
                                 <th>Petugas</th>
-                                <th>Pesan</th>
-                                <th>Bayar</th>
                                 <th>Detail</th>
                             </tr>
                         </thead>
@@ -35,6 +33,7 @@
                 </div>
             </div>
         </div><!-- /.container-fluid -->
+
     </section>
     <!-- /.content -->
 </div>
@@ -63,7 +62,6 @@
                         </tr>
                     </thead>
                     <tbody id="detailBarang">
-
                     </tbody>
                 </table>
             </div>
@@ -96,13 +94,104 @@
 <script src="<?php echo base_url('assets/plugins/datatables/jquery.dataTables.min.js') ?>"></script>
 <script src="<?php echo base_url('assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') ?>"></script>
 <script src="<?php echo base_url('assets/plugins/sweetalert2/sweetalert2.min.js') ?>"></script>
+
 <script>
     var LAPreadUrl = '<?php echo base_url('laporan/readlapeceran') ?>';
     var LAPdetailurl = '<?php echo base_url('laporan/readdetail/') ?>';
     var TRGeditUrl = '<?php echo base_url('laporan/updatehutang') ?>';
-</script>
-<script src="<?php echo base_url('assets/js/lapEceran.js') ?>"></script>
-<script type="text/javascript">
+
+    let url,
+        lapEceran = $("#tbllapeceran").DataTable({
+            responsive: !0,
+            scrollX: !0,
+            ajax: '<?php echo base_url('laporan/readlapnonmember') ?>',
+            columnDefs: [{
+                searcable: !1,
+                orderable: !1,
+                targets: 0
+            }],
+            order: [
+                [1, "asc"]
+            ],
+            columns: [{
+                    data: null
+                },
+                {
+                    data: "jual_nofak"
+                },
+                {
+                    data: "jual_tanggal"
+                },
+                {
+                    data: "jual_total"
+                },
+                {
+                    data: "jual_jml_uang"
+                },
+                {
+                    data: "jual_kembalian"
+                },
+                {
+                    data: "petugas"
+                },
+                {
+                    data: "action"
+                },
+            ]
+        });
+
+    function reloadTable() {
+        lapEceran.ajax.reload();
+    }
+
+    function detail(a) {
+        console.log(a);
+        $("#LAPmodalDetail").modal("show");
+        $("#detailBarang").load(LAPdetailurl + a);
+    }
+
+    function lunas(a) {
+        console.log(a);
+        $.ajax({
+            url: TRGeditUrl,
+            type: "post",
+            dataType: "json",
+            data: {
+                jlStatus: a,
+            },
+            success: (a) => {
+                console.log(a);
+                lapEceran.ajax.reload();
+            },
+            error: (a) => {
+                console.log(a);
+            },
+        });
+    }
+
+    lapEceran.on("order.dt search.dt", () => {
+            lapEceran
+                .column(0, {
+                    search: "applied",
+                    order: "applied"
+                })
+                .nodes()
+                .each((a, e) => {
+                    a.innerHTML = e + 1;
+                });
+        }),
+        $("#form").validate({
+            errorElement: "span",
+            errorPlacement: (e, t) => {
+                e.addClass("invalid-feedback"), t.closest(".form-group").append(a);
+            },
+            submitHandler: () => {
+                "edit" == url ? editData() : addData();
+            },
+        }),
+        $(".modal").on("hidden.bs.modal", () => {
+            $("#form")[0].reset(), $("#form").validate().resetForm();
+        });
 </script>
 
 </body>

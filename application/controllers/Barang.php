@@ -66,6 +66,39 @@ class Barang extends CI_Controller
         echo json_encode($pelanggan);
     }
 
+    public function readDetail()
+    {
+        header('Content-type: application/json');
+        if ($this->m_barang->read()->num_rows() > 0) {
+            $i = 1;
+            foreach ($this->m_barang->read()->result() as $barang) {
+                $i++;
+                $data[] = array(
+                    'no' => $i,
+                    'barang_barcode' => $barang->barang_id,
+                    'barang_nama' => $barang->barang_nama,
+                    'barang_harpok_grosir' => $barang->barang_harpok_grosir,
+                    'barang_harpok_eceran' => $barang->barang_harpok_eceran,
+                    'barang_harjul_grosir' => $barang->barang_harjul_grosir,
+                    'barang_harjul_eceran' => $barang->barang_harjul_eceran,
+                    'barang_harjul_grosir_m' => $barang->barang_harjul_grosir_m,
+                    'barang_harjul_eceran_m' => $barang->barang_harjul_eceran_m,
+                    'barang_kategori' => $barang->kategori_nama,
+                    'barang_suplier' => $barang->suplier_nama,
+                    'barang_stok' =>  round($barang->barang_stok) . " " . $barang->satuan_nama . " / " . round($barang->barang_stok * $barang->barang_min_stok) . " " . $barang->satuan_turunan,
+                    'barang_min_stok' => $barang->barang_min_stok,
+                    'barang_last' => $barang->barang_tgl_last_update,
+                );
+            }
+        } else {
+            $data = array();
+        }
+        $pelanggan = array(
+            'data' => $data
+        );
+        echo json_encode($pelanggan);
+    }
+
     public function add()
     {
         $kodebarang = $this->m_barang->get_kobar();
@@ -127,7 +160,7 @@ class Barang extends CI_Controller
             'barang_user_id' => $this->session->userdata('idadmin'),
             'barang_tgl_last_update' => date('Y-m-d H:i:s'),
         );
-       
+
         if ($this->m_barang->update($id, $data)) {
             redirect('barang');
             // echo json_encode('sukses');

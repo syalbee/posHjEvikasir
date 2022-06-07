@@ -13,9 +13,9 @@ class M_barang extends CI_Model
 
     public function read()
     {
-        $hsl = $this->db->query("SELECT tbl_barang.*, tbl_kategori.`kategori_nama`, tbl_satuan.`satuan_nama`, tbl_satuan.`satuan_turunan`
+        $hsl = $this->db->query("SELECT tbl_barang.*, tbl_kategori.`kategori_nama`, tbl_satuan.`satuan_nama`, tbl_satuan.`satuan_turunan`, tbl_suplier.`suplier_nama`
         FROM tbl_barang JOIN tbl_kategori ON tbl_barang.`barang_kategori_id` = tbl_kategori.`kategori_id` 
-        JOIN tbl_satuan ON tbl_satuan.`satuan_id` = tbl_barang.`barang_satuan_id` WHERE tbl_barang.active = '1' ");
+        JOIN tbl_satuan ON tbl_satuan.`satuan_id` = tbl_barang.`barang_satuan_id` JOIN tbl_suplier ON tbl_suplier.`suplier_id` = tbl_barang.`barang_suplier_id` WHERE tbl_barang.active = '1'");
         return $hsl;
     }
 
