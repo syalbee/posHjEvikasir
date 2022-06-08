@@ -71,7 +71,6 @@ class Pembelian extends CI_Controller
     public function add_to_cart()
     {
         if ($this->session->userdata('akses') == '1' || $this->session->userdata('akses') == '2') {
-            // nofak=KJH88742121&suplierbeli=7&tgl=03%2F23%2F2022&nabar=Pulpy%20Minute%20Maid%20Natadecoco%20300Ml&satuan=Pcs&harpok=7800&harjul=9800&jumlah=13&kode_brg=BR000001
             $nofak = $this->input->post('nofak');
             $tgl = $this->input->post('tgl');
             $suplier = $this->input->post('suplierbeli');
@@ -87,8 +86,8 @@ class Pembelian extends CI_Controller
                 'id'       => $i['barang_id'],
                 'name'     => $i['barang_nama'],
                 'satuan'   => $i['barang_satuan'],
-                'price'    => $this->input->post('harpok'),
-                'harga'    => $this->input->post('harjul'),
+                'price'    => $this->_getHarga($kobar)['harpok'],
+                'harga'    => $this->_getHarga($kobar)['harjul'],
                 'qty'      => $this->input->post('jumlah')
             );
 
@@ -150,14 +149,20 @@ class Pembelian extends CI_Controller
         }
     }
 
+    private function _getHarga($id)
+    {
+        $this->db->where('barang_id', $id);
+        $data =  $this->db->get('tbl_barang')->result_array();
+
+        $barang = array(
+            'harjul' => $data[0]['barang_harjul_grosir'],
+            'harpok' => $data[0]['barang_harpok_grosir']
+        );
+        return $barang;
+    }
+
     public function coba()
     {
-        // $this->cart->destroy();
-        // foreach ($this->cart->contents() as $items) {
-        //     echo $items['name'] . "<br>";
-        //     echo $items['qty'] . "<br>";
-
-        //     echo $items['rowid'] . "<br>";
-        // }
+      echo $this->m_pembelian->get_kobel();
     }
 }

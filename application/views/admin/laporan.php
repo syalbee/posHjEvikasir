@@ -43,7 +43,7 @@
                 <!-- /.col -->
                 <div class="col-md-3 col-sm-6 col-12">
                     <div class="info-box">
-                        <a href="<?php echo base_url() . 'laporan/lap_data_penjualan' ?>" target="_blank" class="info-box-icon btn btn-primary"><i class="fas fa-cart-arrow-down"></i></a>
+                        <a href="<?php echo base_url() . 'laporan/getalltrans' ?>" class="info-box-icon btn btn-primary"><i class="fas fa-cart-arrow-down"></i></a>
 
                         <div class="info-box-content">
                             <span class="info-box-text">Laporan Penjualan</span>
@@ -94,20 +94,6 @@
                     </div>
                     <!-- /.info-box -->
                 </div>
-                <!-- /.col -->
-                <div class="col-md-3 col-sm-6 col-12">
-                    <div class="info-box">
-                        <a href="#lap_laba_rugi" data-toggle="modal" class="info-box-icon btn btn-primary"><i class="fas fa-chart-line"></i></a>
-                        <div class="info-box-content">
-                            <span class="info-box-text">Laporan Laba</span>
-                            <!-- <span class="info-box-number">13,648</span> -->
-                        </div>
-                        <!-- /.info-box-content -->
-                    </div>
-                    <!-- /.info-box -->
-                </div>
-                <!-- /.col -->
-
             </div>
         </div><!-- /.container-fluid -->
 
@@ -126,7 +112,7 @@
                 </button>
 
             </div>
-            <form class="form-horizontal" method="post" action="<?php echo base_url() . 'laporan/lap_penjualan_pertanggal' ?>" target="_blank">
+            <form class="form-horizontal" method="post" action="<?php echo base_url() . 'laporan/gettranstgl' ?>">
                 <div class="modal-body">
 
                     <div class="form-group">
@@ -162,7 +148,7 @@
                 </button>
 
             </div>
-            <form class="form-horizontal" method="post" action="<?php echo base_url('laporan/lap_penjualan_perbulan') ?>" target="_blank">
+            <form class="form-horizontal" method="post" action="<?php echo base_url('laporan/getbulan') ?>">
                 <div class="modal-body">
 
                     <div class="form-group">
@@ -177,8 +163,6 @@
                             </select>
                         </div>
                     </div>
-
-
                 </div>
 
                 <div class="modal-footer">
@@ -199,13 +183,13 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form class="form-horizontal" method="post" action="<?php echo base_url('laporan/lap_penjualan_pertahun') ?>" target="_blank">
+            <form class="form-horizontal" method="post" action="<?php echo base_url('laporan/gettahun') ?>">
                 <div class="modal-body">
 
                     <div class="form-group">
                         <label class="control-label col-xs-3">Tahun</label>
                         <div class="col-xs-9">
-                            <select name="thn" class="form-control select2" title="Pilih Tahun" data-width="80%" required />
+                            <select name="thn" class="form-control select2" title="Pilih Tahun" data-width="80%" required>
                             <?php foreach ($jual_thn->result_array() as $t) {
                                 $thn = $t['tahun'];
                             ?>
@@ -227,43 +211,6 @@
     </div>
 </div>
 
-<div class="modal fade" id="lap_laba_rugi" tabindex="-1" role="dialog" aria-labelledby="largeModal" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h3 class="modal-title" id="myModalLabel">Pilih Bulan</h3>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form class="form-horizontal" method="post" action="<?php echo base_url('laporan/lap_laba_rugi')  ?>" target="_blank">
-                <div class="modal-body">
-
-                    <div class="form-group">
-                        <label class="control-label col-xs-3">Bulan</label>
-                        <div class="col-xs-9">
-                            <select name="bln" class="form-control select2" title="Pilih Bulan" data-width="80%" required />
-                            <?php foreach ($jual_bln->result_array() as $k) {
-                                $bln = $k['bulan'];
-                            ?>
-                                <option><?php echo $bln; ?></option>
-                            <?php } ?>
-                            </select>
-                        </div>
-                    </div>
-
-
-                </div>
-
-                <div class="modal-footer">
-                    <button class="btn" data-dismiss="modal" aria-hidden="true">Tutup</button>
-                    <button class="btn btn-info"><span class="fa fa-print"></span> Cetak</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
 <footer class="main-footer">
     <div class="float-right d-none d-sm-block">

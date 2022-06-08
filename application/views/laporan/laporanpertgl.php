@@ -6,6 +6,7 @@
             <div class="row mb-2">
                 <div class="col-sm-6">
                     <h1><?= $title; ?></h1>
+                    <h3>Total Penjualan Hari Ini <?= $totalJual; ?></h3>
                 </div>
             </div>
         </div><!-- /.container-fluid -->
@@ -16,21 +17,21 @@
         <div class="container-fluid">
             <div class="card">
                 <div class="card-body">
-                    <table class="table w-100 table-bordered table-hover" id="tbllapeceran">
+                    <table class="table w-100 table-bordered table-hover" id="tblpenjualan">
                         <thead>
                             <tr>
-                                <th>No</th>
-                                <th>Member</th>
-                                <th>No Faktur</th>
-                                <th>Tanggal</th>
+                            <tr>
+                                <th style="text-align:center;width:40px;">No</th>
+                                <th style="text-align:center;width:40px;">No Faktur</th>
+                                <th>Pembeli</th>
                                 <th>Total</th>
-                                <th>Uang</th>
+                                <th>Total Bayar</th>
                                 <th>Kembalian</th>
                                 <th>Petugas</th>
                                 <th>Pesan</th>
-                                <th>Bayar</th>
-                                <th>Info</th>
-                                <th>Detail</th>
+                                <th>Keuntungan</th>
+                                <th id="headTable" style="width:100px;text-align:center;">Detail</th>
+                            </tr>
                             </tr>
                         </thead>
                     </table>
@@ -102,19 +103,18 @@
 <script src="<?php echo base_url('assets/plugins/sweetalert2/sweetalert2.min.js') ?>"></script>
 
 <script>
-    var LAPreadUrl = '<?php echo base_url('laporan/readlapeceran') ?>';
     var LAPdetailurl = '<?php echo base_url('laporan/readdetail/') ?>';
-    var TRGeditUrl = '<?php echo base_url('laporan/updatehutang') ?>';
-
+    var tgl = '<?= $tgl; ?>';
     window.onload = function() {
         document.getElementById('btnSidebar').click();
+        document.getElementById('headTable').click();
     }
 
     let url,
-        lapEceran = $("#tbllapeceran").DataTable({
+        lapDbar = $("#tblpenjualan").DataTable({
             responsive: !0,
             scrollX: !0,
-            ajax: '<?php echo base_url('laporan/readlapmember') ?>',
+            ajax: '<?php echo base_url('laporan/readtgltrans/') ?>' + tgl,
             columnDefs: [{
                 searcable: !1,
                 orderable: !1,
@@ -127,13 +127,10 @@
                     data: null
                 },
                 {
-                    data: "member"
-                },
-                {
                     data: "jual_nofak"
                 },
                 {
-                    data: "jual_tanggal"
+                    data: "jual_member"
                 },
                 {
                     data: "jual_total"
@@ -148,31 +145,19 @@
                     data: "petugas"
                 },
                 {
-                    data: "note"
+                    data: "pesan"
                 },
                 {
-                    data: "sts"
-                },
-                {
-                    data: "jual_utang"
+                    data: "keuntungan"
                 },
                 {
                     data: "action"
                 },
             ],
-            columnDefs: [{
-                targets: [0],
-                render: function(data, type, row) {
-                    if (row.index > 2) {
-                        return "<div style='background-color:red'>" + data + "<div>";
-                    }
-                    return data;
-                },
-            }, ],
         });
 
     function reloadTable() {
-        lapEceran.ajax.reload();
+        lapDbar.ajax.reload();
     }
 
     function detail(a) {
@@ -181,40 +166,9 @@
         $("#detailBarang").load(LAPdetailurl + a);
     }
 
-    function lunas(a) {
-        Swal.fire({
-            title: 'Konfirmasi ?',
-            showDenyButton: true,
-            showCancelButton: true,
-            confirmButtonText: 'Save',
-            denyButtonText: `Close`,
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: TRGeditUrl,
-                    type: "post",
-                    dataType: "json",
-                    data: {
-                        jlStatus: a,
-                    },
-                    success: (a) => {
-                        console.log(a);
-                        lapEceran.ajax.reload();
-                        Swal.fire('Saved!', '', 'success')
-                    },
-                    error: (a) => {
-                        console.log(a);
-                    },
-                });
 
-            } else if (result.isDenied) {
-                Swal.fire('Changes are not saved', '', 'info')
-            }
-        });
-    }
-
-    lapEceran.on("order.dt search.dt", () => {
-            lapEceran
+    lapDbar.on("order.dt search.dt", () => {
+            lapDbar
                 .column(0, {
                     search: "applied",
                     order: "applied"

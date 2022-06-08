@@ -42,27 +42,31 @@ function addData() {
 }
 
 function remove(a) {
+  console.log(a);
   Swal.fire({
-    title: "Hapus",
-    text: "Hapus data ini?",
-    type: "warning",
-    showCancelButton: !0,
-    closeOnConfirm: 0,
-  }).then(() => {
-    if (!isConfirm) return;
-    $.ajax({
-      url: BRGremoveUrl,
-      type: "post",
-      dataType: "json",
-      data: { id: a },
-      success: () => {
-        Swal.fire("Sukses", "Sukses Menghapus Barang", "success"),
-          reloadTable();
-      },
-      error: (a) => {
-        console.log(a);
-      },
-    });
+    title: "Konfirmasi Hapus ?",
+    showDenyButton: true,
+    showCancelButton: true,
+    confirmButtonText: "Save",
+    denyButtonText: `Close`,
+  }).then((result) => {
+    if (result.isConfirmed) {
+      $.ajax({
+        url: BRGremoveUrl,
+        type: "post",
+        dataType: "json",
+        data: { id: a },
+        success: () => {
+          Swal.fire("Sukses", "Sukses Menghapus Barang", "success"),
+            reloadTable();
+        },
+        error: (a) => {
+          console.log(a);
+        },
+      });
+    } else if (result.isDenied) {
+      Swal.fire("Changes are not saved", "", "info");
+    }
   });
 }
 
@@ -84,7 +88,6 @@ function editData() {
 }
 
 function edit(a) {
-
   window.location.href = BRGget_barangUrl + "/" + a;
   // $.ajax({
   //   url: BRGget_barangUrl,

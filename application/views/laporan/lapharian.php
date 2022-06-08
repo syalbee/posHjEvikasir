@@ -29,7 +29,8 @@
                                 <th>Kembalian</th>
                                 <th>Petugas</th>
                                 <th>Pesan</th>
-                                <th style="width:100px;text-align:center;">Detail</th>
+                                <th>Keuntungan</th>
+                                <th id="headTable" style="width:100px;text-align:center;">Detail</th>
                             </tr>
                             </tr>
                         </thead>
@@ -42,6 +43,39 @@
     <!-- /.content -->
 </div>
 <!-- /.content-wrapper -->
+
+<!-- Modal Add -->
+<div class="modal fade" id="LAPmodalDetail">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detail Barang</h5>
+                <button class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table w-100 table-bordered table-hover" id="tblbarang">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Nama Barang</th>
+                            <th>Harga Jual</th>
+                            <th>Qty</th>
+                            <th>Satuan</th>
+                            <th>Diskon</th>
+                            <th>Total</th>
+                            <th>Keuntungan</th>
+                        </tr>
+                    </thead>
+                    <tbody id="detailBarang">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Modal Add -->
 
 <footer class="main-footer">
     <div class="float-right d-none d-sm-block">
@@ -69,8 +103,11 @@
 <script src="<?php echo base_url('assets/plugins/sweetalert2/sweetalert2.min.js') ?>"></script>
 
 <script>
+    var LAPdetailurl = '<?php echo base_url('laporan/readdetail/') ?>';
+
     window.onload = function() {
         document.getElementById('btnSidebar').click();
+        document.getElementById('headTable').click();
     }
 
     let url,
@@ -90,43 +127,31 @@
                     data: null
                 },
                 {
-                    data: "barang_barcode"
+                    data: "jual_nofak"
                 },
                 {
-                    data: "barang_nama"
+                    data: "jual_member"
                 },
                 {
-                    data: "barang_harpok_grosir"
+                    data: "jual_total"
                 },
                 {
-                    data: "barang_harpok_eceran"
+                    data: "jual_jml_uang"
                 },
                 {
-                    data: "barang_harjul_grosir"
+                    data: "jual_kembalian"
                 },
                 {
-                    data: "barang_harjul_eceran"
+                    data: "petugas"
                 },
                 {
-                    data: "barang_harjul_grosir_m"
+                    data: "pesan"
                 },
                 {
-                    data: "barang_harjul_eceran_m"
+                    data: "keuntungan"
                 },
                 {
-                    data: "barang_kategori"
-                },
-                {
-                    data: "barang_suplier"
-                },
-                {
-                    data: "barang_stok"
-                },
-                {
-                    data: "barang_min_stok"
-                },
-                {
-                    data: "barang_last"
+                    data: "action"
                 },
             ],
         });
@@ -141,24 +166,6 @@
         $("#detailBarang").load(LAPdetailurl + a);
     }
 
-    function lunas(a) {
-        console.log(a);
-        $.ajax({
-            url: TRGeditUrl,
-            type: "post",
-            dataType: "json",
-            data: {
-                jlStatus: a,
-            },
-            success: (a) => {
-                console.log(a);
-                lapDbar.ajax.reload();
-            },
-            error: (a) => {
-                console.log(a);
-            },
-        });
-    }
 
     lapDbar.on("order.dt search.dt", () => {
             lapDbar

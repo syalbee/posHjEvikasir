@@ -9,6 +9,7 @@ class M_pembelian extends CI_Model
         $idadmin = $this->session->userdata('idadmin');
         $this->db->query("INSERT INTO tbl_beli (beli_nofak,beli_tanggal,beli_suplier_id,beli_user_id,beli_kode) VALUES ('$nofak','$tglfak','$suplier','$idadmin','$beli_kode')");
         foreach ($this->cart->contents() as $item) {
+            $tglUpdate = date("Y-m-d H:i:s");
             $data = array(
                 'd_beli_nofak'         =>    $nofak,
                 'd_beli_barang_id'    =>    $item['id'],
@@ -18,7 +19,7 @@ class M_pembelian extends CI_Model
                 'd_beli_kode'        =>    $beli_kode
             );
             $this->db->insert('tbl_detail_beli', $data);
-            $this->db->query("update tbl_barang set barang_stok=barang_stok+'$item[qty]',barang_harpok='$item[price]',barang_harjul='$item[harga]' where barang_id='$item[id]'");
+            $this->db->query("update tbl_barang set barang_stok=barang_stok+'$item[qty]',barang_harpok_grosir='$item[price]',barang_harjul_grosir='$item[harga]', barang_tgl_last_update = '$tglUpdate' where barang_id='$item[id]'");
         }
         return true;
     }

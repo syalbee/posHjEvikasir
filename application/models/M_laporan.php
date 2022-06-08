@@ -48,22 +48,30 @@ class M_laporan extends CI_Model
     }
     public function get_jual_perbulan($bulan)
     {
-        $hsl = $this->db->query("SELECT jual_nofak,DATE_FORMAT(jual_tanggal,'%M %Y') AS bulan,DATE_FORMAT(jual_tanggal,'%d %M %Y') AS jual_tanggal,d_jual_barang_id,d_jual_barang_nama,d_jual_barang_satuan,d_jual_barang_harpok,d_jual_barang_harjul,d_jual_qty,d_jual_diskon,d_jual_total FROM tbl_jual JOIN tbl_detail_jual ON jual_nofak=d_jual_nofak WHERE DATE_FORMAT(jual_tanggal,'%M %Y')='$bulan' ORDER BY jual_nofak DESC");
+        $hsl = $this->db->query("SELECT * FROM tbl_jual
+                                WHERE DATE_FORMAT(jual_tanggal,'%M %Y')='$bulan'
+                                ORDER BY jual_tanggal DESC");
         return $hsl;
     }
     public function get_total_jual_perbulan($bulan)
     {
-        $hsl = $this->db->query("SELECT jual_nofak,DATE_FORMAT(jual_tanggal,'%M %Y') AS bulan,DATE_FORMAT(jual_tanggal,'%d %M %Y') AS jual_tanggal,d_jual_barang_id,d_jual_barang_nama,d_jual_barang_satuan,d_jual_barang_harpok,d_jual_barang_harjul,d_jual_qty,d_jual_diskon,SUM(d_jual_total) as total FROM tbl_jual JOIN tbl_detail_jual ON jual_nofak=d_jual_nofak WHERE DATE_FORMAT(jual_tanggal,'%M %Y')='$bulan' ORDER BY jual_nofak DESC");
+        $hsl = $this->db->query("SELECT SUM(jual_total) AS total FROM tbl_jual
+                                 WHERE DATE_FORMAT(jual_tanggal,'%M %Y')='$bulan'
+                                 ORDER BY jual_tanggal DESC");
         return $hsl;
     }
     public function get_jual_pertahun($tahun)
     {
-        $hsl = $this->db->query("SELECT jual_nofak,YEAR(jual_tanggal) AS tahun,DATE_FORMAT(jual_tanggal,'%M %Y') AS bulan,DATE_FORMAT(jual_tanggal,'%d %M %Y') AS jual_tanggal,d_jual_barang_id,d_jual_barang_nama,d_jual_barang_satuan,d_jual_barang_harpok,d_jual_barang_harjul,d_jual_qty,d_jual_diskon,d_jual_total FROM tbl_jual JOIN tbl_detail_jual ON jual_nofak=d_jual_nofak WHERE YEAR(jual_tanggal)='$tahun' ORDER BY jual_nofak DESC");
+        $hsl = $this->db->query("SELECT * FROM tbl_jual
+        WHERE YEAR(jual_tanggal)='$tahun'
+        ORDER BY jual_tanggal DESC");
         return $hsl;
     }
     public function get_total_jual_pertahun($tahun)
     {
-        $hsl = $this->db->query("SELECT jual_nofak,YEAR(jual_tanggal) AS tahun,DATE_FORMAT(jual_tanggal,'%M %Y') AS bulan,DATE_FORMAT(jual_tanggal,'%d %M %Y') AS jual_tanggal,d_jual_barang_id,d_jual_barang_nama,d_jual_barang_satuan,d_jual_barang_harpok,d_jual_barang_harjul,d_jual_qty,d_jual_diskon,SUM(d_jual_total) as total FROM tbl_jual JOIN tbl_detail_jual ON jual_nofak=d_jual_nofak WHERE YEAR(jual_tanggal)='$tahun' ORDER BY jual_nofak DESC");
+        $hsl = $this->db->query("SELECT SUM(jual_total) AS total FROM tbl_jual
+        WHERE YEAR(jual_tanggal)='$tahun'
+        ORDER BY jual_tanggal DESC");
         return $hsl;
     }
     public function get_lap_laba_rugi($bulan)
@@ -125,9 +133,6 @@ class M_laporan extends CI_Model
 
     public function getHariini($tanggal)
     {
-        $this->db->from('tbl_jual');
-        $this->db->where('jual_tanggal', $tanggal);
-        $this->db->order_by("jual_tanggal", "DESC");
-        return $this->db->get();
+        return $this->db->query("SELECT * FROM tbl_jual WHERE DATE(jual_tanggal)='$tanggal'");
     }
 }

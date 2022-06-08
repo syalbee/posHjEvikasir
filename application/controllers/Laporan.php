@@ -10,7 +10,7 @@ class Laporan extends CI_Controller
             $url = base_url();
             redirect($url);
         };
-
+        date_default_timezone_set('Asia/Jakarta');
         $this->load->model('m_kategori');
         $this->load->model('m_barang');
         $this->load->model('m_suplier');
@@ -43,93 +43,6 @@ class Laporan extends CI_Controller
         }
     }
 
-    public function lap_stok_barang()
-    {
-        $x['data'] = $this->m_laporan->get_stok_barang();
-        $this->load->view('laporan/lap_stok_barang', $x);
-    }
-
-    public function lap_data_barang()
-    {
-        $x['data'] = $this->m_laporan->get_data_barang();
-        $this->load->view('laporan/lap_data_barang', $x);
-    }
-
-    public function lap_data_penjualan()
-    {
-        $x['data'] = $this->m_laporan->get_data_penjualan();
-        $x['jml'] = $this->m_laporan->get_total_penjualan();
-        $this->load->view('laporan/lap_penjualan', $x);
-    }
-
-    public function lap_penjualan_pertanggal()
-    {
-        $tanggal = $this->input->post('tgl');
-        $tanggal = date("Y-m-d", strtotime($tanggal));
-        $tanggal = "2022-06-02";
-        $x['jml'] = $this->m_laporan->get_data__total_jual_pertanggal($tanggal);
-        $x['data'] = $this->m_laporan->get_data_jual_pertanggal($tanggal);
-        $this->load->view('laporan/lap_jual_pertanggal', $x);
-    }
-
-    public function lap_penjualan_perbulan()
-    {
-        $bulan = $this->input->post('bln');
-        $x['jml'] = $this->m_laporan->get_total_jual_perbulan($bulan);
-        $x['data'] = $this->m_laporan->get_jual_perbulan($bulan);
-        $this->load->view('laporan/lap_jual_perbulan', $x);
-    }
-
-    public function lap_penjualan_pertahun()
-    {
-        $tahun = $this->input->post('thn');
-        $x['jml'] = $this->m_laporan->get_total_jual_pertahun($tahun);
-        $x['data'] = $this->m_laporan->get_jual_pertahun($tahun);
-        $this->load->view('laporan/lap_jual_pertahun', $x);
-    }
-
-    public function lap_laba_rugi()
-    {
-        $bulan = $this->input->post('bln');
-        $x['jml'] = $this->m_laporan->get_total_lap_laba_rugi($bulan);
-        $x['data'] = $this->m_laporan->get_lap_laba_rugi($bulan);
-        $this->load->view('laporan/lap_laba_rugi', $x);
-    }
-
-    public function ecerankomplit()
-    {
-        if ($this->session->userdata('akses') == '1' || $this->session->userdata('akses') == '2') {
-            $data = [
-                'title' => "Laporan Penjualan Eceran",
-                'toko' => "Toko Hj Evi",
-                'nama' => $this->session->userdata('nama'),
-            ];
-
-            $this->load->view('template/header', $data);
-            $this->load->view('template/sidebar', $data);
-            $this->load->view('admin/lapeceran', $data);
-        } else {
-            echo "Halaman tidak ditemukan";
-        }
-    }
-
-    public function grosirkomplit()
-    {
-        if ($this->session->userdata('akses') == '1' || $this->session->userdata('akses') == '2') {
-            $data = [
-                'title' => "Laporan Penjualan Grosir",
-                'toko' => "Toko Hj Evi",
-                'nama' => $this->session->userdata('nama'),
-            ];
-
-            $this->load->view('template/header', $data);
-            $this->load->view('template/sidebar', $data);
-            $this->load->view('admin/lapgrosir', $data);
-        } else {
-            echo "Halaman tidak ditemukan";
-        }
-    }
-
     public function readLapmember()
     {
         header('Content-type: application/json');
@@ -149,6 +62,7 @@ class Laporan extends CI_Controller
                         'petugas' => $this->getPetugas($lapMember->jual_user_id),
                         'note' => $lapMember->jual_deskripsi,
                         'sts' => $lapMember->jual_status === '1' ? "<h6 class='alert alert-danger'>Hutang</h6>" : "<h6 class='alert alert-success'>Lunas</h6>",
+                        'jual_utang' => $lapMember->jual_utang,
                         'action' => '<button class="btn btn-sm btn-warning" onclick="detail(\'' . $lapMember->jual_nofak . '\')"><i class="fas fa-edit"></i></button> &nbsp; <button class="btn btn-sm btn-primary" onclick="lunas(\'' . $lapMember->jual_nofak . '\')"><i class="fas fa-check"></i></button>',
                     );
                 }
@@ -178,7 +92,7 @@ class Laporan extends CI_Controller
                         'jual_jml_uang' => $all->jual_jml_uang,
                         'jual_kembalian' => $all->jual_kembalian,
                         'petugas' => $this->getPetugas($all->jual_user_id),
-                        'action' => '<button class="btn btn-sm btn-warning" onclick="detail(\'' . $all->jual_nofak . '\')"><i class="fas fa-edit"></i></button> &nbsp; <button class="btn btn-sm btn-primary" onclick="lunas(\'' . $all->jual_nofak . '\')"><i class="fas fa-check"></i></button>',
+                        'action' => '<button class="btn btn-sm btn-warning" onclick="detail(\'' . $all->jual_nofak . '\')"><i class="fas fa-edit"></i></button>',
                     );
                 }
             }
@@ -193,7 +107,6 @@ class Laporan extends CI_Controller
 
     public function readDetail($readDetail)
     {
-        // $readDetail= $this->input->post('id');
         $output = '';
         $i = 1;
         foreach ($this->m_laporan->readDetail($readDetail)->result_array() as $items) {
@@ -203,8 +116,10 @@ class Laporan extends CI_Controller
                 <td>' . $items['d_jual_barang_nama'] . ' </td>
                 <td>' . $items['d_jual_barang_harjul'] . ' </td>
                 <td>' . $items['d_jual_qty'] . ' </td>
+                <td>' . $items['d_jual_barang_satuan'] . ' </td>
                 <td>' . $items['d_jual_diskon'] . ' </td>
                 <td>' . $items['d_jual_total'] . ' </td>
+                <td>' . $this->_keuntunganbrg($items['d_jual_barang_id'], $items['d_jual_nofak']) . ' </td>
             </tr>';
             $i++;
         }
@@ -217,6 +132,7 @@ class Laporan extends CI_Controller
 
         $data = array(
             'jual_status' => '0',
+            'jual_utang' => $this->session->userdata('nama') . " | " . date("y-m-d H:i"),
         );
 
         $this->db->where('jual_nofak', $id);
@@ -224,13 +140,6 @@ class Laporan extends CI_Controller
             echo json_encode("Sukses");
         }
     }
-
-    private function getPetugas($id)
-    {
-        $this->db->where('user_id', $id);
-        return $this->db->get('tbl_user')->result_array()[0]['user_nama'];
-    }
-
 
     public function lapMember()
     {
@@ -268,12 +177,6 @@ class Laporan extends CI_Controller
         }
     }
 
-    private function _getMeber($id)
-    {
-        $this->db->where('id', $id);
-        return $this->db->get('tbl_member')->result_array()[0]['nama'];
-    }
-
 
     public function lapdBarang()
     {
@@ -301,7 +204,7 @@ class Laporan extends CI_Controller
                 'title' => "Laporan Penjualan Harian - " . date("D-M-Y"),
                 'toko' => $this->db->get('tbl_toko')->result_array()[0]['nama'],
                 'nama' => $this->session->userdata('nama'),
-                'totalJual' => "Rp. ".$this->_pendapatanJual(date("Y-m-d"))['total']
+                'totalJual' => "Rp. " . $this->_pendapatanJual(date("Y-m-d"))['total']
             ];
 
             $this->load->view('template/header', $data);
@@ -314,20 +217,65 @@ class Laporan extends CI_Controller
 
     public function getAlltrans()
     {
+        if ($this->session->userdata('akses') == '1') {
+
+            $data = [
+                'title' => "Laporan Penjualan",
+                'toko' => $this->db->get('tbl_toko')->result_array()[0]['nama'],
+                'nama' => $this->session->userdata('nama'),
+                'totalJual' => "Rp. " . $this->_pendapatanJualall()['total']
+            ];
+
+            $this->load->view('template/header', $data);
+            $this->load->view('template/sidebar', $data);
+            $this->load->view('laporan/alltransaksi', $data);
+        } else {
+            echo "Halaman tidak ditemukan";
+        }
+    }
+
+    public function getTranstgl()
+    {
+
+        if ($this->session->userdata('akses') == '1') {
+
+            $tanggal = $this->input->post('tgl');
+            $tanggal = date("Y-m-d", strtotime($tanggal));
+
+            $data = [
+                'title' => "Laporan Penjualan Pertanggal "  . $tanggal,
+                'toko' => $this->db->get('tbl_toko')->result_array()[0]['nama'],
+                'nama' => $this->session->userdata('nama'),
+                'totalJual' => "Rp. " . $this->_pendapatanJual($tanggal)['total'],
+                'tgl'=> $tanggal
+            ];
+
+            $this->load->view('template/header', $data);
+            $this->load->view('template/sidebar', $data);
+            $this->load->view('laporan/laporanpertgl', $data);
+        } else {
+            echo "Halaman tidak ditemukan";
+        }
+    }
+
+    public function readAlltrans()
+    {
         header('Content-type: application/json');
         $iterasi = 1;
         if ($this->m_laporan->allTransaksi()->num_rows() > 0) {
-            foreach ($this->m_laporan->allTransaksi()->result() as $allTrans) {
-                $idTran = (string)$allTrans->jual_nofak;
+            foreach ($this->m_laporan->allTransaksi()->result() as $Alltrans) {
+                $idTran = (string)$Alltrans->jual_nofak;
                 $data[] = array(
                     'no' => $iterasi++,
                     'jual_nofak' => $idTran,
-                    'jual_tanggal' => $allTrans->jual_tanggal,
-                    'jual_total' => $allTrans->jual_total,
-                    'jual_jml_uang' => $allTrans->jual_jml_uang,
-                    'jual_kembalian' => $allTrans->jual_kembalian,
-                    'petugas' => $this->getPetugas($allTrans->jual_user_id),
-                    'action' => '<button class="btn btn-sm btn-warning" onclick="detail(\'' . $allTrans->jual_nofak . '\')"><i class="fas fa-edit"></i></button> &nbsp; <button class="btn btn-sm btn-primary" onclick="lunas(\'' . $allTrans->jual_nofak . '\')"><i class="fas fa-check"></i></button>',
+                    'jual_member' => $this->_getMeber($Alltrans->jual_member_id),
+                    'jual_total' => $Alltrans->jual_total,
+                    'jual_jml_uang' => $Alltrans->jual_jml_uang,
+                    'jual_kembalian' => $Alltrans->jual_kembalian,
+                    'petugas' => $this->getPetugas($Alltrans->jual_user_id),
+                    'pesan' => $Alltrans->jual_deskripsi,
+                    'keuntungan' => $this->_keuntungan($idTran),
+                    'action' => '<button class="btn btn-sm btn-warning" onclick="detail(\'' . $Alltrans->jual_nofak . '\')"><i class="fas fa-edit"></i></button>',
                 );
             }
         } else {
@@ -339,40 +287,246 @@ class Laporan extends CI_Controller
         echo json_encode($lapdatanonMember);
     }
 
-    private function _pendapatanJual($tanggal)
+    public function readTgltrans($tanggal)
     {
-       return $this->db->query("SELECT SUM(jual_total) AS total FROM tbl_jual WHERE DATE(jual_tanggal) = '$tanggal'")->result_array()[0];
-    }
-
-    public function readharini()
-    {
-        // header('Content-type: application/json');
+        header('Content-type: application/json');
         $iterasi = 1;
-        if ($this->m_laporan->getHariini(date('Y-m-d'))->num_rows() > 0) {
-            foreach ($this->m_laporan->getHariini()->result(date('Y-m-d')) as $allTrans) {
-                $idTran = (string)$allTrans->jual_nofak;
+        if ($this->m_laporan->getHariini($tanggal)->num_rows() > 0) {
+            foreach ($this->m_laporan->getHariini($tanggal)->result() as $Alltrans) {
+                $idTran = (string)$Alltrans->jual_nofak;
                 $data[] = array(
                     'no' => $iterasi++,
                     'jual_nofak' => $idTran,
-                    'jual_member' => $allTrans->jual_tanggal,
-                    'jual_total' => $allTrans->jual_total,
-                    'jual_jml_uang' => $allTrans->jual_jml_uang,
-                    'jual_kembalian' => $allTrans->jual_kembalian,
-                    'petugas' => $this->getPetugas($allTrans->jual_user_id),
-                    'pesan' => $this->getPetugas($allTrans->jual_user_id),
-                    'action' => '<button class="btn btn-sm btn-warning" onclick="detail(\'' . $allTrans->jual_nofak . '\')"><i class="fas fa-edit"></i></button> &nbsp; <button class="btn btn-sm btn-primary" onclick="lunas(\'' . $allTrans->jual_nofak . '\')"><i class="fas fa-check"></i></button>',
+                    'jual_member' => $this->_getMeber($Alltrans->jual_member_id),
+                    'jual_total' => $Alltrans->jual_total,
+                    'jual_jml_uang' => $Alltrans->jual_jml_uang,
+                    'jual_kembalian' => $Alltrans->jual_kembalian,
+                    'petugas' => $this->getPetugas($Alltrans->jual_user_id),
+                    'pesan' => $Alltrans->jual_deskripsi,
+                    'keuntungan' => $this->_keuntungan($idTran),
+                    'action' => '<button class="btn btn-sm btn-warning" onclick="detail(\'' . $Alltrans->jual_nofak . '\')"><i class="fas fa-edit"></i></button>',
                 );
             }
-        } 
-        // else {
-        //     $data = array();
-        // }
-        var_dump($data);
-        die;
-
+        } else {
+            $data = array();
+        }
         $lapdatanonMember = array(
             'data' => $data
         );
         echo json_encode($lapdatanonMember);
+    }
+
+    public function readharini()
+    {
+        header('Content-type: application/json');
+        $iterasi = 1;
+        if ($this->m_laporan->getHariini(date('Y-m-d'))->num_rows() > 0) {
+            foreach ($this->m_laporan->getHariini(date('Y-m-d'))->result() as $creadharinini) {
+                $idTran = (string)$creadharinini->jual_nofak;
+                $data[] = array(
+                    'no' => $iterasi++,
+                    'jual_nofak' => $idTran,
+                    'jual_member' => $this->_getMeber($creadharinini->jual_member_id),
+                    'jual_total' => $creadharinini->jual_total,
+                    'jual_jml_uang' => $creadharinini->jual_jml_uang,
+                    'jual_kembalian' => $creadharinini->jual_kembalian,
+                    'petugas' => $this->getPetugas($creadharinini->jual_user_id),
+                    'pesan' => $creadharinini->jual_deskripsi,
+                    'keuntungan' => $this->_keuntungan($idTran),
+                    'action' => '<button class="btn btn-sm btn-warning" onclick="detail(\'' . $creadharinini->jual_nofak . '\')"><i class="fas fa-edit"></i></button>',
+                );
+            }
+        } else {
+            $data = array();
+        }
+        $readHari = array(
+            'data' => $data
+        );
+
+        echo json_encode($readHari);
+    }
+
+    public function readallTran()
+    {
+        header('Content-type: application/json');
+        $iterasi = 1;
+        if ($this->m_laporan->allTransaksi()->num_rows() > 0) {
+            foreach ($this->m_laporan->allTransaksi()->result() as $creadharinini) {
+                $idTran = (string)$creadharinini->jual_nofak;
+                $data[] = array(
+                    'no' => $iterasi++,
+                    'jual_nofak' => $idTran,
+                    'jual_member' => $this->_getMeber($creadharinini->jual_member_id),
+                    'jual_total' => $creadharinini->jual_total,
+                    'jual_jml_uang' => $creadharinini->jual_jml_uang,
+                    'jual_kembalian' => $creadharinini->jual_kembalian,
+                    'petugas' => $this->getPetugas($creadharinini->jual_user_id),
+                    'pesan' => $creadharinini->jual_deskripsi,
+                    'keuntungan' => $this->_keuntungan($idTran),
+                    'action' => '<button class="btn btn-sm btn-warning" onclick="detail(\'' . $creadharinini->jual_nofak . '\')"><i class="fas fa-edit"></i></button>',
+                );
+            }
+        } else {
+            $data = array();
+        }
+        $readHari = array(
+            'data' => $data
+        );
+
+        echo json_encode($readHari);
+    }
+
+    public function getbulan()
+    {
+        if ($this->session->userdata('akses') == '1') {
+            $bulan = $this->input->post('bln');
+            $data = [
+                'title' => "Laporan Penjualan Perbulan " . $bulan,
+                'toko' => $this->db->get('tbl_toko')->result_array()[0]['nama'],
+                'nama' => $this->session->userdata('nama'),
+                'totalJual' => "Rp. " . $this->_keuntunganbln($bulan)[0]['total'],
+                'bln'=>  str_replace(" ", "_", $bulan),
+            ];
+
+            $this->load->view('template/header', $data);
+            $this->load->view('template/sidebar', $data);
+            $this->load->view('laporan/laporanperbln', $data);
+        } else {
+            echo "Halaman tidak ditemukan";
+        }
+    }
+
+    public function readTranbln($bulan)
+    {
+        header('Content-type: application/json');
+        $bulan = str_replace("_", " ", $bulan);
+        $iterasi = 1;
+        if ($this->m_laporan->get_jual_perbulan($bulan)->num_rows() > 0) {
+            foreach ($this->m_laporan->get_jual_perbulan($bulan)->result() as $readBln) {
+                $idTran = (string)$readBln->jual_nofak;
+                $data[] = array(
+                    'no' => $iterasi++,
+                    'jual_nofak' => $idTran,
+                    'jual_member' => $this->_getMeber($readBln->jual_member_id),
+                    'jual_total' => $readBln->jual_total,
+                    'jual_jml_uang' => $readBln->jual_jml_uang,
+                    'jual_kembalian' => $readBln->jual_kembalian,
+                    'petugas' => $this->getPetugas($readBln->jual_user_id),
+                    'pesan' => $readBln->jual_deskripsi,
+                    'keuntungan' => $this->_keuntungan($idTran),
+                    'action' => '<button class="btn btn-sm btn-warning" onclick="detail(\'' . $readBln->jual_nofak . '\')"><i class="fas fa-edit"></i></button>',
+                );
+            }
+        } else {
+            $data = array();
+        }
+        $readHari = array(
+            'data' => $data
+        );
+
+        echo json_encode($readHari);
+    }
+
+    public function gettahun()
+    {
+        if ($this->session->userdata('akses') == '1') {
+            $tahun = $this->input->post('thn');
+            $data = [
+                'title' => "Laporan Penjualan Pertahun " . $tahun,
+                'toko' => $this->db->get('tbl_toko')->result_array()[0]['nama'],
+                'nama' => $this->session->userdata('nama'),
+                'totalJual' => "Rp. " . $this->_keuntunganbln($tahun)[0]['total'],
+                'thn'=>  str_replace(" ", "_", $tahun),
+            ];
+
+            $this->load->view('template/header', $data);
+            $this->load->view('template/sidebar', $data);
+            $this->load->view('laporan/laporanperthn', $data);
+        } else {
+            echo "Halaman tidak ditemukan";
+        }
+    }
+
+    public function readTranthn($tahun)
+    {
+        header('Content-type: application/json');
+        $tahun = str_replace("_", " ", $tahun);
+        $iterasi = 1;
+        if ($this->m_laporan->get_jual_pertahun($tahun)->num_rows() > 0) {
+            foreach ($this->m_laporan->get_jual_pertahun($tahun)->result() as $readBln) {
+                $idTran = (string)$readBln->jual_nofak;
+                $data[] = array(
+                    'no' => $iterasi++,
+                    'jual_nofak' => $idTran,
+                    'jual_member' => $this->_getMeber($readBln->jual_member_id),
+                    'jual_total' => $readBln->jual_total,
+                    'jual_jml_uang' => $readBln->jual_jml_uang,
+                    'jual_kembalian' => $readBln->jual_kembalian,
+                    'petugas' => $this->getPetugas($readBln->jual_user_id),
+                    'pesan' => $readBln->jual_deskripsi,
+                    'keuntungan' => $this->_keuntungan($idTran),
+                    'action' => '<button class="btn btn-sm btn-warning" onclick="detail(\'' . $readBln->jual_nofak . '\')"><i class="fas fa-edit"></i></button>',
+                );
+            }
+        } else {
+            $data = array();
+        }
+        $readHari = array(
+            'data' => $data
+        );
+
+        echo json_encode($readHari);
+    }
+
+    private function _keuntungan($nofak)
+    {
+        $this->db->where('d_jual_nofak', $nofak);
+        $dataKen = $this->db->get('tbl_detail_jual')->result();
+        $sumTotal = 0;
+        $sumModal = 0;
+        foreach ($dataKen as $dt) {
+            $sumTotal += $dt->d_jual_total;
+            $sumModal += $dt->d_jual_barang_harpok * $dt->d_jual_qty;
+        }
+
+        return $sumTotal - $sumModal;
+    }
+
+    public function _keuntunganbrg($idbarang, $idTR)
+    {
+        $dataKen = $this->db->query("SELECT * FROM tbl_detail_jual WHERE d_jual_nofak= '$idTR' AND d_jual_barang_id = '$idbarang'")->result_array()[0];
+        return $dataKen['d_jual_total'] - ($dataKen['d_jual_barang_harpok'] * $dataKen['d_jual_qty']);
+    }
+
+    public function _keuntunganbln($bln)
+    {
+       return $this->m_laporan->get_total_jual_perbulan($bln)->result_array();
+    }
+
+    private function _pendapatanJual($tanggal)
+    {
+        return $this->db->query("SELECT SUM(jual_total) AS total FROM tbl_jual WHERE DATE(jual_tanggal) = '$tanggal'")->result_array()[0];
+    }
+
+    private function _pendapatanJualall()
+    {
+        return $this->db->query("SELECT SUM(jual_total) AS total FROM tbl_jual")->result_array()[0];
+    }
+
+    private function _getMeber($id)
+    {
+
+        if (empty($id) || $id === null) {
+            return "Non Member";
+        } else {
+            $this->db->where('id', $id);
+            return $this->db->get('tbl_member')->result_array()[0]['nama'];
+        }
+    }
+
+    private function getPetugas($id)
+    {
+        $this->db->where('user_id', $id);
+        return $this->db->get('tbl_user')->result_array()[0]['user_nama'];
     }
 }

@@ -18,7 +18,6 @@
             <div class="card">
                 <div class="card-header">
                     <form id="addTocartbeli">
-                        <!-- action="<?= base_url('pembelian/add_to_cart'); ?>" method="POST" -->
                         <table>
                             <tr>
                                 <th style="width:100px;padding-bottom:5px;">No Faktur</th>
@@ -212,10 +211,11 @@
     });
 
     function addTochart() {
+        // console.log($("#addTocartbeli").serialize());
         $.ajax({
             url: '<?= base_url('pembelian/add_to_cart'); ?>',
             type: "post",
-            dataType: "json",
+            dataType: "text",
             data: $("#addTocartbeli").serialize(),
             success: (a) => {
                 $('#detail_cart').load("<?= site_url('pembelian/read'); ?>");
@@ -227,6 +227,7 @@
             },
         });
     }
+
     $('#detail_cart').load("<?= site_url('pembelian/read'); ?>");
 
     var dataMSG = '<?= $this->session->flashdata('msgPembelian'); ?>';

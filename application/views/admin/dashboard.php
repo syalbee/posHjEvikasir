@@ -33,7 +33,7 @@
                             <span class="info-box-icon bg-success"><i class="fas fa-cash-register"></i></span>
 
                             <div class="info-box-content">
-                                <span class="info-box-text"><a href="<?= base_url('penjualan'); ?>">Transaksi</a></span>
+                                <span class="info-box-text"><a href="<?= base_url('transaksi'); ?>">Transaksi</a></span>
                                 <!-- <span class="info-box-number">410</span> -->
                             </div>
                             <!-- /.info-box-content -->

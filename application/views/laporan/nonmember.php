@@ -41,7 +41,7 @@
 
 <!-- Modal Add -->
 <div class="modal fade" id="LAPmodalDetail">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Detail Barang</h5>
@@ -57,8 +57,10 @@
                             <th>Nama Barang</th>
                             <th>Harga Jual</th>
                             <th>Qty</th>
+                            <th>Satuan</th>
                             <th>Diskon</th>
                             <th>Total</th>
+                            <th>Keuntungan</th>
                         </tr>
                     </thead>
                     <tbody id="detailBarang">
