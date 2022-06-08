@@ -68,8 +68,8 @@ class Transaksi_nonmember extends CI_Controller
 
 			$kobar = $this->input->post('Barangid');
 			$produk = $this->m_barang->get_beli($kobar);
-
 			$i = $produk->row_array();
+			
 			if ($this->input->post('jenisTR') === "grosir") {
 				$data = array(
 					'id'       => $i['barang_id'] . $this->_getNameID(),

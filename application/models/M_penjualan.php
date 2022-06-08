@@ -37,10 +37,10 @@ class M_penjualan extends CI_Model
             "jual_keterangan" => "nonmember",
             "jual_member_id"  => NULL,
             "jual_deskripsi"  => NULL,
-            "jual_status"     => "0"
+            "jual_status"     => "0",
+            "jual_utang"     => ""
         );
         $this->db->insert('tbl_jual', $dataJual);
-
         foreach ($this->cart->contents() as $item) {
             $data = array(
                 'd_jual_nofak'          =>    $nofak,
@@ -63,20 +63,19 @@ class M_penjualan extends CI_Model
     function simpan_penjualan($nofak, $total, $jml_uang, $kembalian, $pelanggan, $pesan, $stsBayar)
     {
         $idadmin = $this->session->userdata('idadmin');
-
         $dataJual = array(
             "jual_nofak"      => $nofak,
             "jual_total"      => $total,
             "jual_jml_uang"   => $jml_uang,
             "jual_kembalian"  => $kembalian,
             "jual_user_id"    => $idadmin,
-            "jual_keterangan" => "member",
-            "jual_member_id"  => $this->_getIdmember($pelanggan),
+            "jual_keterangan" => $pelanggan !== "false" ? 'member' : 'nonmember',
+            "jual_member_id"  => $pelanggan !== "false" ? $pelanggan : null,
             "jual_deskripsi"  => $pesan,
             "jual_status"     => $stsBayar
         );
-        $this->db->insert('tbl_jual', $dataJual);
 
+        $this->db->insert('tbl_jual', $dataJual);
         foreach ($this->cart->contents() as $item) {
             $data = array(
                 'd_jual_nofak'          =>    $nofak,
@@ -130,10 +129,5 @@ class M_penjualan extends CI_Model
             $jumlah =  $qty / $qtyBarang;
         }
         $this->db->query("UPDATE tbl_barang SET barang_stok = barang_stok -$jumlah WHERE barang_id='$id'");
-    }
-
-    private function _getIdmember($kode)
-    {
-       return $this->db->query("SELECT id FROM tbl_member WHERE kode = '$kode'")->result_array()[0]['id'];
     }
 }

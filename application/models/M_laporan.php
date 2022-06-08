@@ -66,20 +66,6 @@ class M_laporan extends CI_Model
         $hsl = $this->db->query("SELECT jual_nofak,YEAR(jual_tanggal) AS tahun,DATE_FORMAT(jual_tanggal,'%M %Y') AS bulan,DATE_FORMAT(jual_tanggal,'%d %M %Y') AS jual_tanggal,d_jual_barang_id,d_jual_barang_nama,d_jual_barang_satuan,d_jual_barang_harpok,d_jual_barang_harjul,d_jual_qty,d_jual_diskon,SUM(d_jual_total) as total FROM tbl_jual JOIN tbl_detail_jual ON jual_nofak=d_jual_nofak WHERE YEAR(jual_tanggal)='$tahun' ORDER BY jual_nofak DESC");
         return $hsl;
     }
-
-    // //=========Laporan Laba rugi============
-    // public function get_lap_laba_rugi($bulan)
-    // {
-    //     $hsl = $this->db->query("SELECT DATE_FORMAT(jual_tanggal,'%d %M %Y %H:%i:%s') as jual_tanggal,d_jual_barang_nama,d_jual_barang_satuan,d_jual_barang_harpok,d_jual_barang_harjul,(d_jual_barang_harjul-d_jual_barang_harpok) AS keunt,d_jual_qty,d_jual_diskon,((d_jual_barang_harjul-d_jual_barang_harpok)*d_jual_qty)-(d_jual_qty*d_jual_diskon) AS untung_bersih FROM tbl_jual JOIN tbl_detail_jual ON jual_nofak=d_jual_nofak WHERE DATE_FORMAT(jual_tanggal,'%M %Y')='$bulan'");
-    //     return $hsl;
-    // }
-    // public function get_total_lap_laba_rugi($bulan)
-    // {
-    //     $hsl = $this->db->query("SELECT DATE_FORMAT(jual_tanggal,'%M %Y') AS bulan,d_jual_barang_nama,d_jual_barang_satuan,d_jual_barang_harpok,d_jual_barang_harjul,(d_jual_barang_harjul-d_jual_barang_harpok) AS keunt,d_jual_qty,d_jual_diskon, SUM(((d_jual_barang_harjul-d_jual_barang_harpok)*d_jual_qty)-(d_jual_qty*d_jual_diskon)) AS total FROM tbl_jual JOIN tbl_detail_jual ON jual_nofak=d_jual_nofak WHERE DATE_FORMAT(jual_tanggal,'%M %Y')='$bulan'");
-    //     return $hsl;
-    // }
-
-    //=========Laporan Laba rugi============
     public function get_lap_laba_rugi($bulan)
     {
         $hsl = $this->db->query("SELECT DATE_FORMAT(jual_tanggal,'%M %Y') AS bulan, barang_min_stok, jual_keterangan, 
@@ -133,6 +119,14 @@ class M_laporan extends CI_Model
     public function allTransaksi()
     {
         $this->db->from('tbl_jual');
+        $this->db->order_by("jual_tanggal", "DESC");
+        return $this->db->get();
+    }
+
+    public function getHariini($tanggal)
+    {
+        $this->db->from('tbl_jual');
+        $this->db->where('jual_tanggal', $tanggal);
         $this->db->order_by("jual_tanggal", "DESC");
         return $this->db->get();
     }

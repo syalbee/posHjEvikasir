@@ -17,13 +17,13 @@
         <div class="container-fluid">
             <div class="card">
                 <div class="card-body">
-                    <table class="table w-100 table-bordered table-hover" id="tblDbarang">
+                    <table class="table w-100 table-bordered table-hover" id="tblPenjualanhar">
                         <thead>
                             <tr>
                             <tr>
                                 <th style="text-align:center;width:40px;">No</th>
                                 <th style="text-align:center;width:40px;">No Faktur</th>
-                                <th>Member</th>
+                                <th>Pembeli</th>
                                 <th>Total</th>
                                 <th>Total Bayar</th>
                                 <th>Kembalian</th>
@@ -74,10 +74,10 @@
     }
 
     let url,
-        lapDbar = $("#tblDbarang").DataTable({
+        lapDbar = $("#tblPenjualanhar").DataTable({
             responsive: !0,
             scrollX: !0,
-            ajax: '<?php echo base_url('barang/readdetail') ?>',
+            ajax: '<?php echo base_url('laporan/readharini') ?>',
             columnDefs: [{
                 searcable: !1,
                 orderable: !1,

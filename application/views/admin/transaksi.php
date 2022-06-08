@@ -44,12 +44,7 @@
             </div>
             <div class="modal-body">
                 <form>
-                    <div class="form-group">
-                        <label for="IDpeltransaksi">Nama Pelanggan</label>
-                        <select style="width:470px;margin-right:5px;" name="IDpeltransaksi" id="IDpeltransaksi" class="form-control select2 col-sm-12">
 
-                        </select>
-                    </div>
                     <button type="button" onclick="cekPelanggan()" class="btn btn-primary">Submit</button>
                 </form>
             </div>

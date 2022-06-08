@@ -5,7 +5,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1><?= $title . "_" . $member; ?></h1>
+                    <h1><?= $title; ?></h1>
 
                 </div>
             </div>
@@ -18,8 +18,23 @@
         <div class="container-fluid">
             <div class="card">
                 <div class="card-header">
-                    <a href="<?= base_url('transaksi_member/resetcart'); ?>" class="btn btn-sm btn-danger">Reset Form</a>
-                    <br>
+                    <div class="row">
+                        <div class="col">
+                            <a href="<?= base_url('transaksi/resetcart'); ?>" class="btn btn-sm btn-danger">Reset Form</a>
+                            &nbsp;
+                            <button onclick="cekMemberswitch()" class="btn btn-sm btn-primary" id="btnCek">
+                                Cek Member
+                            </button>
+                        </div>
+
+                        <div class="col">
+                            <div class="form-group" id="divSelect">
+                                <select style="width:470px;margin-right:5px;" name="IDpeltransaksi" id="IDpeltransaksi" class="form-control select2 col-sm-12">
+
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                     <hr>
                     <form id="addTocartjual">
                         <table>
@@ -60,7 +75,7 @@
                 </div>
             </div>
 
-            <form action="<?= base_url('transaksi_member/simpan_penjualan'); ?>" method="POST">
+            <form id="formBayar" method="POST" action="<?= base_url('transaksi/simpan_penjualan'); ?>">
                 <table>
                     <tr>
                         <td style="width:760px;" rowspan="2"><button type="submit" class="btn btn-info btn-lg">Simpan</button></td>
@@ -72,27 +87,36 @@
                         <th>Tunai(Rp)</th>
                         <th style="text-align:right;"><input type="text" id="jml_uang" name="jml_uang" class="jml_uang form-control input-sm" style="text-align:right;margin-bottom:5px;" required></th>
                         <input type="hidden" id="jml_uang2" name="jml_uang2" class="form-control input-sm" style="text-align:right;margin-bottom:5px;" required>
+                        <input type="hidden" id="pelanggan" name="pelanggan">
                     </tr>
                     <tr>
                         <td></td>
                         <th>Kembalian(Rp)</th>
                         <th style="text-align:right;"><input type="text" id="kembalian" name="kembalian" class="form-control input-sm" style="text-align:right;margin-bottom:5px;" readonly></th>
                     </tr>
+
                     <tr>
                         <td></td>
-                        <th>Set Total</th>
-                        <th style="text-align:center;">
+                        <th>
+                            <div id="labelSetot">SetTotal</div>
+                        </th>
+                        <th>
                             <br>
-                            <input type="checkbox" class="form-check-input" id="setTotal" name="setTotal">
-                            <label class="form-check-label" for="setTotal">Set Total</label>
+                            <!-- Default checked -->
+                            <div class="custom-control custom-switch" id="divSetot">
+                                <input type="checkbox" class="custom-control-input" name="setTotal" id="setTotal">
+                                <label class="custom-control-label" for="setTotal">.</label>
+                            </div>
                         </th>
                     </tr>
                     <tr>
                         <td></td>
-                        <th>Catatan</th>
+                        <th>
+                            <div id="labelCat">Catatan</div>
+                        </th>
                         <th style="text-align:right;">
                             <br>
-                            <textarea cols="25" rows="3" id="message" name="message"></textarea>
+                            <div id="divCat"><textarea cols="25" rows="3" id="message" name="message"></textarea></div>
                         </th>
                     </tr>
                 </table>
@@ -187,6 +211,54 @@
         dataMSG = "";
     }
 
+    // check member / no
+    var x = document.getElementById("divSelect");
+    var x1 = document.getElementById("labelCat");
+    var x2 = document.getElementById("labelSetot");
+    var x3 = document.getElementById("divSetot");
+    var x4 = document.getElementById("divCat");
+
+    var idMember = "";
+    function cekMemberswitch() {
+        if (x.style.display === "none") {
+            x.style.display = "block";
+            x1.style.display = "block";
+            x2.style.display = "block";
+            x3.style.display = "block";
+            x4.style.display = "block";
+
+            $("#IDpeltransaksi").select2({
+                placeholder: "Nama Pelanggan",
+                ajax: {
+                    url: '<?php echo site_url('pelanggan/get_pelangganid') ?>',
+                    type: "post",
+                    dataType: "json",
+                    data: (params) => ({
+                        namaID: params.term,
+                    }),
+                    success: function(msg) {
+                        // console.log(msg);
+                    },
+                    processResults: function(data) {
+                        console.log(data);
+                        return {
+                            results: $.map(data, function(obj) {
+                                return {
+                                    id: obj.id,
+                                    text: obj.text
+                                };
+                            })
+                        };
+                    },
+                    cache: true,
+                },
+            }).on('select2:select', function(event) {
+                idMember = $(this).val();
+                $('#pelanggan').val(idMember);
+            });
+        }
+    }
+
     function resultHasil() {
         // $(function() {
         $("#kode_brg")[0].focus();
@@ -259,6 +331,11 @@
 
     // Get barang on load
     function onLoadPage() {
+        x.style.display = "none";
+        x1.style.display = "none";
+        x2.style.display = "none";
+        x3.style.display = "none";
+        x4.style.display = "none";
         $(document).on('select2:open', () => {
             document.querySelector('.select2-search__field').focus();
         });
@@ -289,20 +366,9 @@
         });
     }
 
-    // Tentuin jenis transaksi
-    var cekGrosir = false;
-    document
-        .addEventListener("keydown", e => {
-            if (e.key === "F4" || e.key === "F9") {
-                cekGrosir = true;
-                e.preventDefault()
-            }
-        });
-
     // Buat nampilin modal setelah search barang
     $("#kode_brg")[0].focus();
     $(document).ready(function() {
-
         $("#kode_brg").focus();
         $("#kode_brg").on("input", function() {
             var kobar = {
@@ -330,19 +396,30 @@
 
     });
 
+    // Tentuin jenis transaksi grosir/eceran
+    var cekGrosir = false;
+    document
+        .addEventListener("keydown", e => {
+            if (e.key === "F4" || e.key === "F9") {
+                cekGrosir = true;
+                e.preventDefault()
+            }
+        });
+
     // Untuk masukin ke keranjang
     function addKeranjang() {
         if (event.key === 'Enter') {
             var jenisTransaksi = "";
             if (cekGrosir == true) {
-                jenisTransaksi = "grosir";
-            } else {
                 jenisTransaksi = "eceran";
+            } else {
+                jenisTransaksi = "grosir";
             }
             $.ajax({
-                url: "<?= base_url('transaksi_member/add_to_cart'); ?>",
+                url: "<?= base_url('transaksi/add_to_cart'); ?>",
                 type: "POST",
                 data: {
+                    idMember: idMember,
                     jenisTR: jenisTransaksi,
                     Barangid: $("#idBarangs").val(),
                     Barangqty: $("#qtyBarang").val(),
@@ -401,18 +478,14 @@
                 resultHasil();
             }
         });
-    });                    <div class="form-group">
-                        <label for="IDpeltransaksi">Nama Pelanggan</label>
-                        <select style="width:470px;margin-right:5px;" name="IDpeltransaksi" id="IDpeltransaksi" class="form-control select2 col-sm-12">
-
-                        </select>
-                    </div>
+    });
 
     // Buat edit dll
     function search(ele) {
         if (event.key === 'Enter') {
             $('.edit_cart').click();
             $("#kode_brg")[0].focus();
+
         }
     }
 
@@ -431,6 +504,27 @@
             }
         });
     });
+
+    function bayar() {
+        var stsTotal = "";
+        if ($('#setTotal').is(":checked")) {
+            stsTotal = "1";
+        } else {
+            stsTotal = "0";
+        }
+        $.ajax({
+            type: "post",
+            url: "<?= base_url('transaksi/simpan_penjualan'); ?>",
+            dataType: "text",
+            data: {
+                total: $('#total').val(),
+                message: $('#message').val(),
+                setTotal: stsTotal,
+                pelanggan: idMember,
+                jml_uang: $('#jml_uang').val(),
+            }
+        });
+    }
 </script>
 
 </body>

@@ -48,7 +48,6 @@
 
 <script type="text/javascript">
     let dataMSG = '<?= $token; ?>';
-    let jenis = '<?= $jenis; ?>';
     var urlCetak = '<?= base_url('cetak/struk/') . $token; ?>';
     console.log("Data " + dataMSG);
 

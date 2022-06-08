@@ -295,14 +295,13 @@ class Laporan extends CI_Controller
 
     public function lapHarian()
     {
-        $tanggal = date("Y-m-d");
         if ($this->session->userdata('akses') == '1') {
 
             $data = [
                 'title' => "Laporan Penjualan Harian - " . date("D-M-Y"),
                 'toko' => $this->db->get('tbl_toko')->result_array()[0]['nama'],
                 'nama' => $this->session->userdata('nama'),
-                'totalJual' => $this->_pendapatanJual(date("Y-m-D"))
+                'totalJual' => "Rp. ".$this->_pendapatanJual(date("Y-m-d"))['total']
             ];
 
             $this->load->view('template/header', $data);
@@ -343,5 +342,37 @@ class Laporan extends CI_Controller
     private function _pendapatanJual($tanggal)
     {
        return $this->db->query("SELECT SUM(jual_total) AS total FROM tbl_jual WHERE DATE(jual_tanggal) = '$tanggal'")->result_array()[0];
+    }
+
+    public function readharini()
+    {
+        // header('Content-type: application/json');
+        $iterasi = 1;
+        if ($this->m_laporan->getHariini(date('Y-m-d'))->num_rows() > 0) {
+            foreach ($this->m_laporan->getHariini()->result(date('Y-m-d')) as $allTrans) {
+                $idTran = (string)$allTrans->jual_nofak;
+                $data[] = array(
+                    'no' => $iterasi++,
+                    'jual_nofak' => $idTran,
+                    'jual_member' => $allTrans->jual_tanggal,
+                    'jual_total' => $allTrans->jual_total,
+                    'jual_jml_uang' => $allTrans->jual_jml_uang,
+                    'jual_kembalian' => $allTrans->jual_kembalian,
+                    'petugas' => $this->getPetugas($allTrans->jual_user_id),
+                    'pesan' => $this->getPetugas($allTrans->jual_user_id),
+                    'action' => '<button class="btn btn-sm btn-warning" onclick="detail(\'' . $allTrans->jual_nofak . '\')"><i class="fas fa-edit"></i></button> &nbsp; <button class="btn btn-sm btn-primary" onclick="lunas(\'' . $allTrans->jual_nofak . '\')"><i class="fas fa-check"></i></button>',
+                );
+            }
+        } 
+        // else {
+        //     $data = array();
+        // }
+        var_dump($data);
+        die;
+
+        $lapdatanonMember = array(
+            'data' => $data
+        );
+        echo json_encode($lapdatanonMember);
     }
 }
