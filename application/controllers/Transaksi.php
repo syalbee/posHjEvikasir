@@ -196,10 +196,10 @@ class Transaksi extends CI_Controller
 			$pesan = $this->input->post('message');
 			$stsBayar = $this->input->post('setTotal');
 
-			if ($stsBayar === "false") {
-				$stsBayar = '0';
-			} else if ($stsBayar === "true") {
+			if ($stsBayar === "on") {
 				$stsBayar = '1';
+			} else {
+				$stsBayar = '0';
 			}
 
 			if (!empty($this->input->post('pelanggan'))) {

@@ -95,16 +95,17 @@
                 </ul>
             </li>
 
-            <li class="nav-item">
-                <a href="<?= base_url('supplier'); ?>" class="nav-link">
-                    <i class="nav-icon fas fa-people-arrows"></i>
-                    <p>
-                        Supplier
-                    </p>
-                </a>
-            </li>
 
             <?php if ($this->session->userdata('akses') === '1') { ?>
+                <li class="nav-item">
+                    <a href="<?= base_url('supplier'); ?>" class="nav-link">
+                        <i class="nav-icon fas fa-people-arrows"></i>
+                        <p>
+                            Supplier
+                        </p>
+                    </a>
+                </li>
+
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-edit"></i>

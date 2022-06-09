@@ -6,7 +6,8 @@
             <div class="row mb-2">
                 <div class="col-sm-6">
                     <h1><?= $title; ?></h1>
-                    <h3>Total Penjualan Hari Ini <?= $totalJual; ?></h3>
+                    <h5>Total Penjualan Hari Ini <?= $totalJual; ?></h5>
+                    <h5>Total Penjualan Hari Ini <?= $keuntungan; ?></h5>
                 </div>
             </div>
         </div><!-- /.container-fluid -->

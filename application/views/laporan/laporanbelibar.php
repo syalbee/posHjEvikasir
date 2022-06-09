@@ -6,11 +6,9 @@
             <div class="row mb-2">
                 <div class="col-sm-6">
                     <h1><?= $title; ?></h1>
-                    <h5>Total Penjualan <?= $totalJual; ?></h5>
-                    <h5>Total Keuntungan <?= $keuntungan; ?></h5>
                 </div>
             </div>
-        </div>
+        </div><!-- /.container-fluid -->
     </section>
 
     <!-- Main content -->
@@ -18,21 +16,16 @@
         <div class="container-fluid">
             <div class="card">
                 <div class="card-body">
-                    <table class="table w-100 table-bordered table-hover" id="tblpenjualan">
+                    <table class="table w-100 table-bordered table-hover" id="tbllapeceran">
                         <thead>
                             <tr>
-                            <tr>
-                                <th style="text-align:center;width:40px;">No</th>
-                                <th style="text-align:center;width:40px;">No Faktur</th>
-                                <th>Pembeli</th>
-                                <th>Total</th>
-                                <th>Total Bayar</th>
-                                <th>Kembalian</th>
+                                <th>No</th>
+                                <th>No Faktur</th>
+                                <th>Kode Transaksi</th>
+                                <th>Tanggal</th>
+                                <th>Supplier</th>
                                 <th>Petugas</th>
-                                <th>Pesan</th>
-                                <th>Keuntungan</th>
-                                <th id="headTable" style="width:100px;text-align:center;">Detail</th>
-                            </tr>
+                                <th>Detail</th>
                             </tr>
                         </thead>
                     </table>
@@ -43,8 +36,6 @@
     </section>
     <!-- /.content -->
 </div>
-<!-- /.content-wrapper -->
-
 <!-- Modal Add -->
 <div class="modal fade" id="LAPmodalDetail">
     <div class="modal-dialog modal-lg">
@@ -61,12 +52,9 @@
                         <tr>
                             <th>No</th>
                             <th>Nama Barang</th>
-                            <th>Harga Jual</th>
+                            <th>Harga Beli</th>
                             <th>Qty</th>
-                            <th>Satuan</th>
-                            <th>Diskon</th>
                             <th>Total</th>
-                            <th>Keuntungan</th>
                         </tr>
                     </thead>
                     <tbody id="detailBarang">
@@ -104,18 +92,17 @@
 <script src="<?php echo base_url('assets/plugins/sweetalert2/sweetalert2.min.js') ?>"></script>
 
 <script>
-    var LAPdetailurl = '<?php echo base_url('laporan/readdetail/') ?>';
-    var thn = '<?= $thn; ?>';
+
+    var LAPdetailurl = '<?php echo base_url('laporan/readdetilbeli/') ?>';
     window.onload = function() {
         document.getElementById('btnSidebar').click();
-        document.getElementById('headTable').click();
     }
 
     let url,
-        lapDbar = $("#tblpenjualan").DataTable({
+        lapEceran = $("#tbllapeceran").DataTable({
             responsive: !0,
             scrollX: !0,
-            ajax: '<?php echo base_url('laporan/readTranthn/') ?>' + thn,
+            ajax: '<?php echo base_url('laporan/readbelibar') ?>',
             columnDefs: [{
                 searcable: !1,
                 orderable: !1,
@@ -128,48 +115,69 @@
                     data: null
                 },
                 {
-                    data: "jual_nofak"
+                    data: "beli_nofak"
                 },
                 {
-                    data: "jual_member"
+                    data: "kode_tran"
                 },
                 {
-                    data: "jual_total"
+                    data: "tanggal"
                 },
                 {
-                    data: "jual_jml_uang"
-                },
-                {
-                    data: "jual_kembalian"
+                    data: "supplier"
                 },
                 {
                     data: "petugas"
                 },
                 {
-                    data: "pesan"
-                },
-                {
-                    data: "keuntungan"
-                },
-                {
                     data: "action"
                 },
-            ],
+            ]
         });
 
     function reloadTable() {
-        lapDbar.ajax.reload();
+        lapEceran.ajax.reload();
     }
 
     function detail(a) {
-        console.log(a);
         $("#LAPmodalDetail").modal("show");
         $("#detailBarang").load(LAPdetailurl + a);
     }
 
+    function lunas(a) {
+        Swal.fire({
+            title: 'Konfirmasi ?',
+            showDenyButton: true,
+            showCancelButton: true,
+            confirmButtonText: 'Save',
+            denyButtonText: `Close`,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: TRGeditUrl,
+                    type: "post",
+                    dataType: "json",
+                    data: {
+                        jlStatus: a,
+                    },
+                    success: (a) => {
+                        console.log(a);
+                        lapEceran.ajax.reload();
+                        Swal.fire('Saved!', '', 'success')
+                    },
+                    error: (a) => {
+                        console.log(a);
+                    },
+                });
 
-    lapDbar.on("order.dt search.dt", () => {
-            lapDbar
+            } else if (result.isDenied) {
+                Swal.fire('Changes are not saved', '', 'info')
+            }
+        });
+    }
+
+    lapEceran.on("order.dt search.dt", () => {
+            lapEceran
                 .column(0, {
                     search: "applied",
                     order: "applied"

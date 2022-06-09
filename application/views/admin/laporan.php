@@ -34,11 +34,8 @@
 
                         <div class="info-box-content">
                             <span class="info-box-text">Laporan Penjualan Hari Ini</span>
-                            <!-- <span class="info-box-number">410</span> -->
                         </div>
-                        <!-- /.info-box-content -->
                     </div>
-                    <!-- /.info-box -->
                 </div>
                 <!-- /.col -->
                 <div class="col-md-3 col-sm-6 col-12">
@@ -70,11 +67,11 @@
             </div>
 
             <div class="row">
-                <div class="col-md-3 col-sm-6 col-12">
+                <div class="col-md-3 col-sm-3 col-12">
                     <div class="info-box">
                         <a href="#lap_jual_perbulan" data-toggle="modal" class="info-box-icon btn btn-primary"><i class="fas fa-cart-arrow-down"></i></a>
                         <div class="info-box-content">
-                            <span class="info-box-text"> Penjualan /Bulan</span>
+                            <span class="info-box-text">Penjualan /Bulan</span>
                             <!-- <span class="info-box-number">1,410</span> -->
                         </div>
                         <!-- /.info-box-content -->
@@ -82,7 +79,7 @@
                     <!-- /.info-box -->
                 </div>
                 <!-- /.col -->
-                <div class="col-md-3 col-sm-6 col-12">
+                <div class="col-md-3 col-sm-3 col-12">
                     <div class="info-box">
                         <a href="#lap_jual_pertahun" data-toggle="modal" class="info-box-icon btn btn-primary"><i class="fas fa-cart-arrow-down"></i></a>
 
@@ -94,13 +91,22 @@
                     </div>
                     <!-- /.info-box -->
                 </div>
+                <div class="col-md-3 col-sm-3 col-12">
+                    <div class="info-box">
+                        <a href="<?php echo base_url() . 'laporan/lapbelibar' ?>" class="info-box-icon btn btn-primary"><i class="fas fa-layer-group"></i></a>
+                        <div class="info-box-content">
+                            <span class="info-box-text">Lap Pembelian Barang</span>
+                        </div>
+                    </div>
+                </div>
             </div>
+
         </div><!-- /.container-fluid -->
 
     </section>
     <!-- /.content -->
 </div>
-<!-- /.content-wrapper -->
+
 
 <div class="modal fade" id="lap_jual_pertanggal" tabindex="-1" role="dialog" aria-labelledby="largeModal" aria-hidden="true">
     <div class="modal-dialog">
@@ -190,11 +196,11 @@
                         <label class="control-label col-xs-3">Tahun</label>
                         <div class="col-xs-9">
                             <select name="thn" class="form-control select2" title="Pilih Tahun" data-width="80%" required>
-                            <?php foreach ($jual_thn->result_array() as $t) {
-                                $thn = $t['tahun'];
-                            ?>
-                                <option><?php echo $thn; ?></option>
-                            <?php } ?>
+                                <?php foreach ($jual_thn->result_array() as $t) {
+                                    $thn = $t['tahun'];
+                                ?>
+                                    <option><?php echo $thn; ?></option>
+                                <?php } ?>
                             </select>
                         </div>
                     </div>

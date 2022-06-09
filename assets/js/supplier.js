@@ -1,3 +1,4 @@
+console.log("isi epilog");
 let url,
   supplier = $("#tblsupplier").DataTable({
     responsive: !0,
@@ -35,12 +36,15 @@ function addData() {
 }
 
 function remove(a) {
+  console.log(a);
   Swal.fire({
-    title: "Hapus",
-    text: "Hapus data ini?",
-    type: "warning",
-    showCancelButton: !0,
-  }).then(() => {
+    title: "Konfirmasi Hapus ?",
+    showDenyButton: true,
+    showCancelButton: true,
+    confirmButtonText: "Save",
+    denyButtonText: `Close`,
+  }).then((result) => {
+    if (result.isConfirmed) {
     $.ajax({
       url: SPremoveUrl,
       type: "post",
@@ -53,6 +57,9 @@ function remove(a) {
         console.log(a);
       },
     });
+  }  else if (result.isDenied) {
+    Swal.fire("Changes are not saved", "", "info");
+  }
   });
 }
 

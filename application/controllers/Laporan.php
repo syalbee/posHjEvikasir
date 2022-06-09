@@ -204,7 +204,8 @@ class Laporan extends CI_Controller
                 'title' => "Laporan Penjualan Harian - " . date("D-M-Y"),
                 'toko' => $this->db->get('tbl_toko')->result_array()[0]['nama'],
                 'nama' => $this->session->userdata('nama'),
-                'totalJual' => "Rp. " . $this->_pendapatanJual(date("Y-m-d"))['total']
+                'totalJual' => "Rp. " . $this->_pendapatanJual(date("Y-m-d"))['total'],
+                'keuntungan' => "Rp. ". $this->_getKeuntungan(date("Y-m-d"))
             ];
 
             $this->load->view('template/header', $data);
@@ -223,7 +224,8 @@ class Laporan extends CI_Controller
                 'title' => "Laporan Penjualan",
                 'toko' => $this->db->get('tbl_toko')->result_array()[0]['nama'],
                 'nama' => $this->session->userdata('nama'),
-                'totalJual' => "Rp. " . $this->_pendapatanJualall()['total']
+                'totalJual' => "Rp. " . $this->_pendapatanJualall()['total'],
+                'keuntungan' => "Rp. ". $this->_getKeuntunganall()
             ];
 
             $this->load->view('template/header', $data);
@@ -247,7 +249,8 @@ class Laporan extends CI_Controller
                 'toko' => $this->db->get('tbl_toko')->result_array()[0]['nama'],
                 'nama' => $this->session->userdata('nama'),
                 'totalJual' => "Rp. " . $this->_pendapatanJual($tanggal)['total'],
-                'tgl'=> $tanggal
+                'keuntungan' => "Rp. ". $this->_getKeuntungan($tanggal),
+                'tgl' => $tanggal
             ];
 
             $this->load->view('template/header', $data);
@@ -385,7 +388,8 @@ class Laporan extends CI_Controller
                 'toko' => $this->db->get('tbl_toko')->result_array()[0]['nama'],
                 'nama' => $this->session->userdata('nama'),
                 'totalJual' => "Rp. " . $this->_keuntunganbln($bulan)[0]['total'],
-                'bln'=>  str_replace(" ", "_", $bulan),
+                'keuntungan' => "Rp. " . $this-> _getKeuntunganbln($bulan),
+                'bln' =>  str_replace(" ", "_", $bulan),
             ];
 
             $this->load->view('template/header', $data);
@@ -435,8 +439,9 @@ class Laporan extends CI_Controller
                 'title' => "Laporan Penjualan Pertahun " . $tahun,
                 'toko' => $this->db->get('tbl_toko')->result_array()[0]['nama'],
                 'nama' => $this->session->userdata('nama'),
-                'totalJual' => "Rp. " . $this->_keuntunganbln($tahun)[0]['total'],
-                'thn'=>  str_replace(" ", "_", $tahun),
+                'totalJual' => "Rp. " . $this->m_laporan->get_total_jual_pertahun($tahun)->result_array()[0]['total'],
+                'keuntungan' => "Rp. " . $this-> _getKeuntunganthn($tahun),
+                'thn' =>  str_replace(" ", "_", $tahun),
             ];
 
             $this->load->view('template/header', $data);
@@ -478,6 +483,73 @@ class Laporan extends CI_Controller
         echo json_encode($readHari);
     }
 
+
+    public function _keuntunganbrg($idbarang, $idTR)
+    {
+        $dataKen = $this->db->query("SELECT * FROM tbl_detail_jual WHERE d_jual_nofak= '$idTR' AND d_jual_barang_id = '$idbarang'")->result_array()[0];
+        return $dataKen['d_jual_total'] - ($dataKen['d_jual_barang_harpok'] * $dataKen['d_jual_qty']);
+    }
+
+    public function lapbelibar()
+    {
+        if ($this->session->userdata('akses') == '1') {
+            $data = [
+                'title' => "Laporan Pembelian Barang",
+                'toko' => $this->db->get('tbl_toko')->result_array()[0]['nama'],
+                'nama' => $this->session->userdata('nama'),
+            ];
+
+            $this->load->view('template/header', $data);
+            $this->load->view('template/sidebar', $data);
+            $this->load->view('laporan/laporanbelibar', $data);
+        } else {
+            echo "Halaman tidak ditemukan";
+        }
+    }
+
+    public function readBelibar()
+    {
+        header('Content-type: application/json');
+        $iterasi = 1;
+        if ($this->m_laporan->getBelibar()->num_rows() > 0) {
+            foreach ($this->m_laporan->getBelibar()->result() as $readBar) {
+                $data[] = array(
+                    'no' => $iterasi++,
+                    'beli_nofak' => $readBar->beli_nofak,
+                    'kode_tran' => $readBar->beli_kode,
+                    'tanggal' => $readBar->beli_tanggal,
+                    'supplier' => $readBar->suplier_nama,
+                    'petugas' => $readBar->user_nama,
+                    'action' => '<button class="btn btn-sm btn-warning" onclick="detail(\'' . $readBar->beli_kode . '\')"><i class="fas fa-edit"></i></button>',
+                );
+            }
+        } else {
+            $data = array();
+        }
+        $readHari = array(
+            'data' => $data
+        );
+
+        echo json_encode($readHari);
+    }
+    public function readdetilbeli($readDetail)
+    {
+        $output = '';
+        $i = 1;
+        foreach ($this->m_laporan->getBelibardetail($readDetail)->result_array() as $items) {
+            $output .=
+                '<tr>
+                <td>' . $i . ' </td>
+                <td>' . $items['barang_nama'] . ' </td>
+                <td>' . $items['d_beli_harga'] . ' </td>
+                <td>' . $items['d_beli_jumlah'] . ' </td>
+                <td>' . $items['d_beli_total'] . ' </td>
+                </tr>';
+            $i++;
+        }
+        echo $output;
+    }
+
     private function _keuntungan($nofak)
     {
         $this->db->where('d_jual_nofak', $nofak);
@@ -492,15 +564,9 @@ class Laporan extends CI_Controller
         return $sumTotal - $sumModal;
     }
 
-    public function _keuntunganbrg($idbarang, $idTR)
-    {
-        $dataKen = $this->db->query("SELECT * FROM tbl_detail_jual WHERE d_jual_nofak= '$idTR' AND d_jual_barang_id = '$idbarang'")->result_array()[0];
-        return $dataKen['d_jual_total'] - ($dataKen['d_jual_barang_harpok'] * $dataKen['d_jual_qty']);
-    }
-
     public function _keuntunganbln($bln)
     {
-       return $this->m_laporan->get_total_jual_perbulan($bln)->result_array();
+        return $this->m_laporan->get_total_jual_perbulan($bln)->result_array();
     }
 
     private function _pendapatanJual($tanggal)
@@ -528,5 +594,57 @@ class Laporan extends CI_Controller
     {
         $this->db->where('user_id', $id);
         return $this->db->get('tbl_user')->result_array()[0]['user_nama'];
+    }
+
+    private function _getKeuntungan($tanggal)
+    {
+        $dataKen = $this->db->query("SELECT SUM(jual_total) AS total FROM tbl_jual WHERE DATE(jual_tanggal) = '$tanggal'")->result_array();
+        $dataBarang =  $this->db->query("SELECT d_jual_barang_harpok, d_jual_qty FROM tbl_jual JOIN tbl_detail_jual
+                        ON tbl_jual.`jual_nofak` = tbl_detail_jual.`d_jual_nofak` WHERE DATE(jual_tanggal) = '$tanggal'")->result();
+        $sumModal = 0;
+        foreach ($dataBarang as $db) {
+            $sumModal += $db->d_jual_barang_harpok * $db->d_jual_qty;
+        }
+
+        return $dataKen[0]['total'] - $sumModal;
+    }
+
+    private function _getKeuntunganall()
+    {
+        $dataKen = $this->db->query("SELECT SUM(jual_total) AS total FROM tbl_jual ")->result_array();
+        $dataBarang =  $this->db->query("SELECT d_jual_barang_harpok, d_jual_qty FROM tbl_jual JOIN tbl_detail_jual
+                        ON tbl_jual.`jual_nofak` = tbl_detail_jual.`d_jual_nofak` ")->result();
+        $sumModal = 0;
+        foreach ($dataBarang as $db) {
+            $sumModal += $db->d_jual_barang_harpok * $db->d_jual_qty;
+        }
+
+        return $dataKen[0]['total'] - $sumModal;
+    }
+
+    private function _getKeuntunganbln($bulan)
+    {
+        $dataKen = $this->db->query("SELECT SUM(jual_total) AS total FROM tbl_jual WHERE DATE_FORMAT(jual_tanggal,'%M %Y') = '$bulan'")->result_array();
+        $dataBarang =  $this->db->query("SELECT d_jual_barang_harpok, d_jual_qty FROM tbl_jual JOIN tbl_detail_jual
+                        ON tbl_jual.`jual_nofak` = tbl_detail_jual.`d_jual_nofak` WHERE DATE_FORMAT(jual_tanggal,'%M %Y') = '$bulan'")->result();
+        $sumModal = 0;
+        foreach ($dataBarang as $db) {
+            $sumModal += $db->d_jual_barang_harpok * $db->d_jual_qty;
+        }
+
+        return $dataKen[0]['total'] - $sumModal;
+    }
+
+    private function _getKeuntunganthn($tahun)
+    {
+        $dataKen = $this->db->query("SELECT SUM(jual_total) AS total FROM tbl_jual  WHERE YEAR(jual_tanggal)='$tahun' ")->result_array();
+        $dataBarang =  $this->db->query("SELECT d_jual_barang_harpok, d_jual_qty FROM tbl_jual JOIN tbl_detail_jual
+                        ON tbl_jual.`jual_nofak` = tbl_detail_jual.`d_jual_nofak`  WHERE YEAR(jual_tanggal)='$tahun' ")->result();
+        $sumModal = 0;
+        foreach ($dataBarang as $db) {
+            $sumModal += $db->d_jual_barang_harpok * $db->d_jual_qty;
+        }
+
+        return $dataKen[0]['total'] - $sumModal;
     }
 }

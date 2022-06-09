@@ -121,14 +121,17 @@
 <!-- ./wrapper -->
 
 <!-- jQuery -->
-<script src="<?= base_url(); ?>assets/plugins/jquery/jquery.js"></script>
+<script src="<?= base_url(); ?>assets/plugins/jquery/jquery.min.js"></script>
 <!-- Bootstrap 4 -->
 <script src="<?= base_url(); ?>assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <!-- AdminLTE App -->
 <script src="<?= base_url(); ?>assets/dist/js/adminlte.min.js"></script>
-<script src="<?php echo base_url('assets/plugins/datatables/jquery.dataTables.min.js') ?>"></script>
-<script src="<?php echo base_url('assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') ?>"></script>
-<script src="<?php echo base_url('assets/plugins/sweetalert2/sweetalert2.min.js') ?>"></script>
+<script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js') ?>"></script>
+<script src="<?= base_url('assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') ?>"></script>
+<script src="<?= base_url('assets/plugins/sweetalert2/sweetalert2.min.js') ?>"></script>
+<!-- Select2 -->
+<script src="<?= base_url(); ?>assets/plugins/select2/js/select2.full.min.js"></script>
+
 <script>
     var SPreadUrl = '<?php echo base_url('supplier/read') ?>';
     var SPaddUrl = '<?php echo base_url('supplier/add') ?>';
@@ -137,23 +140,7 @@
     var SPget_supplierUrl = '<?php echo base_url('supplier/get_supplier') ?>';
     var SPlisturl = '<?php echo base_url('supplier/listsupplier') ?>';
 </script>
-<script src="<?php echo base_url('assets/js/supplier.js') ?>"></script>
-<script type="text/javascript">
-    // var dataMSG = '<?= $this->session->flashdata('msgSupplier'); ?>';
-    // // console.log("Data" + dataMSG.length);
-
-    // if (dataMSG.length != 0) {
-    //     if (dataMSG === "add") {
-    //         Swal.fire("Sukses", "Sukses Menambah Supplier", "success");
-    //     } else if (dataMSG === "edit") {
-    //         Swal.fire("Sukses", "Sukses Edit Supplier", "success");
-    //     } else if (dataMSG === "remove") {
-    //         Swal.fire("Sukses", "Sukses Hapus Supplier", "success");
-    //     }
-    //     dataMSG = "";
-    // }
-</script>
-
+<script src="<?= base_url('assets/js/supplier.js') ?>"></script>
 </body>
 
 </html>

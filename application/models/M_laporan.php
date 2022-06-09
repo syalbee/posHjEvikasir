@@ -135,4 +135,18 @@ class M_laporan extends CI_Model
     {
         return $this->db->query("SELECT * FROM tbl_jual WHERE DATE(jual_tanggal)='$tanggal'");
     }
+
+    public function getBelibar()
+    {
+        return $this->db->query("SELECT tbl_beli.*, tbl_suplier.`suplier_nama`, tbl_user.`user_nama` FROM tbl_beli
+        JOIN tbl_suplier ON tbl_beli.`beli_suplier_id` = tbl_suplier.`suplier_id` 
+        JOIN tbl_user ON tbl_user.`user_id` = tbl_beli.`beli_user_id`");
+    }
+
+    public function getBelibardetail($kodeBeli)
+    {
+        return $this->db->query("SELECT tbl_detail_beli.*, tbl_barang.`barang_nama` FROM tbl_detail_beli
+        JOIN tbl_barang ON tbl_detail_beli.`d_beli_barang_id` = tbl_barang.`barcode`
+        WHERE tbl_detail_beli.`d_beli_kode` = '$kodeBeli'");
+    }
 }
