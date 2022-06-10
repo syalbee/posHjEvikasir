@@ -60,6 +60,7 @@ class Cetak extends CI_Controller
 
             $printer->text("Nama    : " . $pelanggan[0]->nama . "\n");
         }
+
         $printer->text("-------------------------------");
         $printer->text("\n");
 
@@ -91,8 +92,6 @@ class Cetak extends CI_Controller
 
         $printer->text("-------------------------------");
         $printer->text("\n");
-
-
 
         $printer->text("Total   : " . $transaksi[0]->jual_total . "\n");
         $printer->text("Tunai   : " . $transaksi[0]->jual_jml_uang . "\n");
