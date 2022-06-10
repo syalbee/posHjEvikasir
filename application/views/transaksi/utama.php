@@ -134,13 +134,14 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 id="title_modal" class="modal-title"></h5>
+                <h5 class="modal-title">Masukan Qty </h5>
                 <button class="close" data-dismiss="modal">
                     <span>&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <!-- <h5 id="titleKg"></h5> -->
+                <h5 id="title_modal"></h5>
+                <h6 id="jenisBrg">Jenis Barang Grosir</h6>
                 <!-- <form id="BRGkginsert"> -->
                 <input type="hidden" id="idBarangs" name="idBarangs">
                 <div class="form-group">
@@ -219,6 +220,7 @@
     var x4 = document.getElementById("divCat");
 
     var idMember = "";
+
     function cekMemberswitch() {
         if (x.style.display === "none") {
             x.style.display = "block";
@@ -401,7 +403,8 @@
     document
         .addEventListener("keydown", e => {
             if (e.key === "F4" || e.key === "F9") {
-                cekGrosir = true;
+                cekGrosir = true;~
+                $("#jenisBrg").html("Jenis Barang Eceran");
                 e.preventDefault()
             }
         });

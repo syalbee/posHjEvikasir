@@ -53,7 +53,7 @@ class Barang extends CI_Controller
                     'barang_harjul_grosir_m' => $barang->barang_harjul_grosir_m,
                     'barang_harjul_eceran_m' => $barang->barang_harjul_eceran_m,
                     'barang_stok' =>  round($barang->barang_stok) . " " . $barang->satuan_nama . " / " . round($barang->barang_stok * $barang->barang_min_stok) . " " . $barang->satuan_turunan,
-                    'barang_min_stok' => $barang->barang_min_stok,
+                    'barang_min_stok' => round($barang->barang_stok * $barang->barang_min_stok) <= $barang->barang_min_stok ? "<h6 class='alert alert-danger'> < " . $barang->barang_min_stok . "</h6>"  : "<h6 class='alert alert-success'> > "  . $barang->barang_min_stok . "</h6>",
                     'action' => '<button class="btn btn-sm btn-warning" onclick="edit(' . $barang->id . ')"><i class="fas fa-edit"></i></button> <button class="btn btn-sm btn-danger" onclick="remove(' . $barang->id . ')"><i class="fas fa-trash"></i></button>',
                 );
             }

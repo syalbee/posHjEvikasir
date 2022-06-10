@@ -17,7 +17,15 @@ let url,
       { data: "barang_stok" },
       { data: "barang_min_stok" },
       { data: "action" },
-    ],
+    ],columnDefs: [{
+      targets: [0],
+      render: function(data, type, row) {
+          if (row.index > 2) {
+              return "<div style='background-color:red'>" + data + "<div>";
+          }
+          return data;
+      },
+  }, ],
   });
 function reloadTable() {
   barang.ajax.reload();
