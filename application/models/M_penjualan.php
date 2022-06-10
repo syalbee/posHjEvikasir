@@ -86,8 +86,10 @@ class M_penjualan extends CI_Model
                 'd_jual_barang_harjul'  =>    $item['amount'],
                 'd_jual_qty'            =>    $item['qty'],
                 'd_jual_diskon'         =>    $item['disc'],
-                'd_jual_total'          =>    $item['subtotal']
+                'd_jual_total'          =>    $item['subtotal'],
+                'd_jual_banyaknya'      =>    $item['banyaknya']
             );
+            
             $this->db->insert('tbl_detail_jual', $data);
             $this->_hitungQty($item['kodeBrg'], $item['qty'],  $item['jenis']);
         }

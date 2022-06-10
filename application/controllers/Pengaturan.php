@@ -42,7 +42,8 @@ class Pengaturan extends CI_Controller
                 'jumUang' => $this->input->post('uang'),
                 'uang' => $this->input->post('dapatuang'),
                 'point' => $this->input->post('dapatpoint'),
-                'alamat' => $this->input->post('alamat')
+                'alamat' => $this->input->post('alamat'),
+                'noTelp' => $this->input->post('notelp')
             );
 
             $this->db->where('id', $id);

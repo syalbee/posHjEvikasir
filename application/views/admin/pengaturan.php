@@ -47,7 +47,10 @@
                                     <label>Jumlah uang yang didapat saat penukaran</label>
                                     <input type="text" class="form-control" name="dapatuang" value="<?php echo $data->uang ?>" required>
                                 </div>
-
+                                <div>
+                                    <label>No Telpon</label>
+                                    <input type="text" class="form-control" name="notelp" value="<?php echo $data->noTelp ?>" required>
+                                </div>
                                 <div class="form-group">
                                     <label>Alamat</label>
                                     <textarea name="alamat" placeholder="Alamat" class="form-control" required><?php echo $data->alamat ?></textarea>

@@ -63,6 +63,7 @@
                                 <th style="text-align:center;">Harga(Rp)</th>
                                 <th style="text-align:center;">Diskon(Rp)</th>
                                 <th style="text-align:center;">Qty</th>
+                                <th style="text-align:center;">Banyaknya</th>
                                 <th style="text-align:center;">Sub Total</th>
                                 <th style="width:100px;text-align:center;">Aksi</th>
                             </tr>
@@ -143,10 +144,15 @@
                 <h5 id="title_modal"></h5>
                 <h6 id="jenisBrg">Jenis Barang Grosir</h6>
                 <!-- <form id="BRGkginsert"> -->
+                <hr>
                 <input type="hidden" id="idBarangs" name="idBarangs">
                 <div class="form-group">
                     <!-- <label>QTY :</label> -->
+                    <label for="qtyBarang">Qty</label>
                     <input id="qtyBarang" name="qtyBarang" type="text" onkeydown="addKeranjang()" class="form-control">
+
+                    <label for="jumlahTRk">Banyaknya</label>
+                    <input id="jumlahTRk" name="jumlahTRk" type="text" onkeydown="addKeranjang()" class="form-control">
                 </div>
                 <!-- <button class="btn btn-success" onclick="addKeranjangkilo()" type="button">Tambah</button> -->
                 <!-- </form> -->
@@ -266,7 +272,7 @@
         $("#kode_brg")[0].focus();
         $.ajax({
             type: "GET",
-            url: "<?php echo base_url('transaksi_member/readtotal'); ?>",
+            url: "<?php echo base_url('transaksi/readtotal'); ?>",
             success: function(msg) {
                 console.log(msg);
                 $('#total').val(msg);
@@ -326,7 +332,7 @@
 
 
     // reload dat from chart
-    $('#detail_cart').load("<?= site_url('transaksi_member/read'); ?>");
+    $('#detail_cart').load("<?= site_url('transaksi/read'); ?>");
     resultHasil();
     window.onload = onLoadPage();
 
@@ -378,7 +384,7 @@
             };
             $.ajax({
                 type: "POST",
-                url: "<?php echo base_url('transaksi_member/get_barang'); ?>",
+                url: "<?php echo base_url('transaksi/get_barang'); ?>",
                 data: kobar,
                 success: function(msg) {
                     const obj = JSON.parse(msg);
@@ -388,6 +394,7 @@
                     $('#showBRGKg').on('shown.bs.modal', function() {
                         $('#qtyBarang').focus();
                         $("#qtyBarang").val("");
+                        $("#jumlahTRk").val("");
                     });
                 },
                 error(a) {
@@ -403,7 +410,7 @@
     document
         .addEventListener("keydown", e => {
             if (e.key === "F4" || e.key === "F9") {
-                cekGrosir = true;~
+                cekGrosir = true;
                 $("#jenisBrg").html("Jenis Barang Eceran");
                 e.preventDefault()
             }
@@ -412,12 +419,21 @@
     // Untuk masukin ke keranjang
     function addKeranjang() {
         if (event.key === 'Enter') {
+
             var jenisTransaksi = "";
+            var banyaknya = 0;
             if (cekGrosir == true) {
                 jenisTransaksi = "eceran";
             } else {
                 jenisTransaksi = "grosir";
             }
+
+            if ($("#jumlahTRk").val() == "") {
+                banyaknya = 1;
+            } else {
+                banyaknya = $("#jumlahTRk").val();
+            }
+
             $.ajax({
                 url: "<?= base_url('transaksi/add_to_cart'); ?>",
                 type: "POST",
@@ -426,10 +442,12 @@
                     jenisTR: jenisTransaksi,
                     Barangid: $("#idBarangs").val(),
                     Barangqty: $("#qtyBarang").val(),
+                    banyaknya: banyaknya,
                 },
                 success: (a) => {
                     cekGrosir = false;
-                    $('#detail_cart').load("<?= site_url('transaksi_member/read'); ?>");
+                    $("#jenisBrg").html("Jenis Barang Grosir");
+                    $('#detail_cart').load("<?= site_url('transaksi/read'); ?>");
                     resultHasil();
                     $("#showBRGKg").modal("hide");
                     $('#kode_brg').empty();
@@ -449,18 +467,20 @@
             var brgprice = currentRow.find('#BRGprice').val();
             var brgdisc = currentRow.find('#etdisc').val();
             var brgqty = currentRow.find('#etqty').val();
+            var brgbnyk = currentRow.find('#etbny').val();
 
             $.ajax({
-                url: "<?php echo base_url(); ?>transaksi_member/edit",
+                url: "<?php echo base_url(); ?>transaksi/edit",
                 method: "POST",
                 data: {
                     diskon: brgdisc,
                     qty: brgqty,
                     price: brgprice,
-                    row_id: brgid
+                    row_id: brgid,
+                    brgbnyk: brgbnyk
                 },
                 success: function(data) {
-                    $('#detail_cart').load("<?= site_url('transaksi_member/read'); ?>");
+                    $('#detail_cart').load("<?= site_url('transaksi/read'); ?>");
                     resultHasil();
                 }
             });
@@ -471,13 +491,13 @@
     $(document).on('click', '.hapus_cart', function() {
         var row_id = $(this).attr("id"); //mengambil row_id dari artibut id
         $.ajax({
-            url: "<?php echo base_url(); ?>transaksi_member/remove",
+            url: "<?php echo base_url(); ?>transaksi/remove",
             method: "POST",
             data: {
                 row_id: row_id
             },
             success: function(data) {
-                $('#detail_cart').load("<?= site_url('transaksi_member/read'); ?>");
+                $('#detail_cart').load("<?= site_url('transaksi/read'); ?>");
                 resultHasil();
             }
         });

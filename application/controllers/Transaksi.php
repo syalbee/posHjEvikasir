@@ -68,6 +68,7 @@ class Transaksi extends CI_Controller
 		if ($this->session->userdata('akses') == '1' || $this->session->userdata('akses') == '2') {
 
 			$kobar = $this->input->post('Barangid');
+			$banyaknya = $this->input->post('banyaknya');
 			$produk = $this->m_barang->get_beli($kobar);
 			$i = $produk->row_array();
 
@@ -81,9 +82,10 @@ class Transaksi extends CI_Controller
 						'satuan'   => $i['barang_satuan'],
 						'jenis'	   => "grosir",
 						'harpok'   => $i['barang_harpok_grosir'],
-						'price'    => intval($i['barang_harjul_grosir']),
+						'price'    => intval($i['barang_harjul_grosir']) * $banyaknya,
 						'disc'     => 0,
 						'qty'      => $this->input->post('Barangqty'),
+						'banyaknya' => $banyaknya,
 						'amount'	=> intval($i['barang_harjul_grosir'])
 					);
 				} else if ($this->input->post('jenisTR') === "eceran") {
@@ -94,10 +96,11 @@ class Transaksi extends CI_Controller
 						'satuan'   => $i['satuan_turunan'],
 						'jenis'	   => "eceran",
 						'harpok'   => $i['barang_harpok_eceran'],
-						'price'    => intval($i['barang_harjul_eceran']),
+						'price'    => intval($i['barang_harjul_grosir']) * $banyaknya,
 						'disc'     => 0,
 						'qty'      => $this->input->post('Barangqty'),
-						'amount'	=> intval($i['barang_harjul_eceran'])
+						'banyaknya' => $banyaknya,
+						'amount'	=> intval($i['barang_harjul_grosir'])
 					);
 				}
 				// untuk member
@@ -110,10 +113,11 @@ class Transaksi extends CI_Controller
 						'satuan'   => $i['barang_satuan'],
 						'jenis'	   => "grosir",
 						'harpok'   => $i['barang_harpok_grosir'],
-						'price'    => intval($i['barang_harjul_grosir_m']),
+						'price'    => intval($i['barang_harjul_grosir']) * $banyaknya,
 						'disc'     => 0,
 						'qty'      => $this->input->post('Barangqty'),
-						'amount'	=> intval($i['barang_harjul_grosir_m'])
+						'banyaknya' => $banyaknya,
+						'amount'	=> intval($i['barang_harjul_grosir'])
 					);
 				} else if ($this->input->post('jenisTR') === "eceran") {
 					$data = array(
@@ -123,10 +127,11 @@ class Transaksi extends CI_Controller
 						'satuan'   => $i['satuan_turunan'],
 						'jenis'	   => "eceran",
 						'harpok'   => $i['barang_harpok_eceran'],
-						'price'    => intval($i['barang_harjul_eceran_m']),
+						'price'    => intval($i['barang_harjul_grosir']) * $banyaknya,
 						'disc'     => 0,
 						'qty'      => $this->input->post('Barangqty'),
-						'amount'	=> intval($i['barang_harjul_eceran_m'])
+						'banyaknya' => $banyaknya,
+						'amount'	=> intval($i['barang_harjul_grosir'])
 					);
 				}
 			}
@@ -149,14 +154,16 @@ class Transaksi extends CI_Controller
 				'<tr>
                 <input type="hidden" id="BRGiD" name="BRGiD" value="' . $items['rowid'] . '">
                 <input type="hidden" id="BRGprice" name="BRGprice" value="' . $items['amount'] . '">
+				<input type="hidden" id="etbny" name="etbny" value="' . $items['banyaknya'] . '">
                 <td>' . $items['name'] . ' </td>
                 <td>' . $items['jenis'] . ' </td>
                 <td style="text-align:center;">' . $items['satuan'] . ' </td>
                 <td style="text-align:right;">' . number_format($items['amount']) . ' </td>
                 <td><input type="text" id="etdisc" onkeydown="search(this)" name="ETdiskon" value="' . $items['disc'] . '" class="form-control input-sm" style="width:130px;margin-right:5px;" required></td>
                 <td><input type="text" id="etqty" onkeydown="search(this)" name="ETqty" value=" ' . $items['qty'] . '" class="form-control input-sm" style="width:90px;margin-right:5px;" required></td>
+                <td style="text-align:right;">' . number_format($items['banyaknya']) . ' </td>
                 <td style="text-align:right;">' . number_format($items['subtotal']) . ' </td>
-                <td style="text-align:center;">
+				<td style="text-align:center;">
                 <button id="' . $items['rowid'] . '"  class="edit_cart btn btn-warning btn-xs">Edt</button>
                 <button id="' . $items['rowid'] . '"  class="hapus_cart btn btn-danger btn-xs">Hps</button>
             </td>
@@ -180,10 +187,12 @@ class Transaksi extends CI_Controller
 		$qty = $this->input->post('qty');
 		$diskon = $this->input->post('diskon');
 		$price = $this->input->post('price');
+		$banyaknya = $this->input->post('brgbnyk');
+
 		$this->cart->update(array(
 			'rowid' => $this->input->post('row_id'),
 			'qty' => $qty,
-			'price' => $price - $diskon,
+			'price' => ($price - $diskon) * $banyaknya,
 			'disc' => $diskon
 		));
 	}
