@@ -3,7 +3,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Cetak extends CI_Controller
 {
-
     public function __construct()
     {
         parent::__construct();
@@ -64,26 +63,18 @@ class Cetak extends CI_Controller
         $printer->text("-------------------------------");
         $printer->text("\n");
 
-        // $printer->text($this->buatBaris4Kolom("Nama", "qty", "Harga", "Subtotal"));
         foreach ($produk as $key) {
 
             $printer->initialize();
             $printer->setFont(Escpos\Printer::FONT_A);
-            $printer->text($key->d_jual_barang_nama . "  \n");
+            $printer->text($key->d_jual_barang_nama . " \n");
 
-   
             if ($key->d_jual_diskon !== "0") {
-                // $diskonSum += $key->d_jual_diskon;
-                $printer->text($this->buatBaris4Kolom($key->d_jual_qty ." ". $key->d_jual_barang_satuan . " * " . $key->d_jual_banyaknya, "", "diskon", "Subtotal"));
-                 
+                $diskonSum += ($key->d_jual_diskon * $key->d_jual_banyaknya) * $key->d_jual_qty;
+                $printer->text($key->d_jual_qty . " " . $key->d_jual_barang_satuan . " * " . $key->d_jual_banyaknya, "", "-" . ($key->d_jual_diskon * $key->d_jual_banyaknya) * $key->d_jual_qty, $key->d_jual_total);
             } else {
-                $printer->text($this->buatBaris4Kolom($key->d_jual_qty ." ". $key->d_jual_barang_satuan . " * " . $key->d_jual_banyaknya, "", "", "Subtotal"));
-                 
+                $printer->text($this->buatBaris4Kolom($key->d_jual_qty . " " . $key->d_jual_barang_satuan . " * " . $key->d_jual_banyaknya, "", "     ", $key->d_jual_total));
             }
-
-            $printer->initialize();
-            $printer->setJustification(Escpos\Printer::JUSTIFY_RIGHT);
-            $printer->text($key->d_jual_total . "\n");
 
             $printer->initialize();
             $printer->setFont(Escpos\Printer::FONT_A);
@@ -106,11 +97,12 @@ class Cetak extends CI_Controller
         $printer->close();
     }
 
-    private function buatBaris4Kolom($kolom1, $kolom2, $kolom3, $kolom4) {
+    private function buatBaris4Kolom($kolom1, $kolom2, $kolom3, $kolom4)
+    {
         // Mengatur lebar setiap kolom (dalam satuan karakter)
         $lebar_kolom_1 = 12;
-        $lebar_kolom_2 = 2;
-        $lebar_kolom_3 = 14;
+        $lebar_kolom_2 = 3;
+        $lebar_kolom_3 = 13;
         $lebar_kolom_4 = 9;
 
         // Melakukan wordwrap(), jadi jika karakter teks melebihi lebar kolom, ditambahkan \n 
@@ -147,6 +139,71 @@ class Cetak extends CI_Controller
         }
 
         // Hasil yang berupa array, disatukan kembali menjadi string dan tambahkan \n disetiap barisnya.
-        return implode($hasilBaris, "\n") . "\n";
-    }   
+        return implode("\n", $hasilBaris) . "\n";
+    }
 }
+// public function coba($id)
+    // {
+
+    //     $this->db->where('d_jual_nofak', $id);
+    //     $produk = $this->db->get('tbl_detail_jual')->result();
+
+    //     $this->db->where('jual_nofak', $id);
+    //     $transaksi = $this->db->get('tbl_jual')->result();
+    //     $date = new DateTime($transaksi[0]->jual_tanggal);
+
+    //     $this->db->select('tbl_user.user_nama as kasir');
+    //     $this->db->from('tbl_user');
+    //     $this->db->join('tbl_jual', 'tbl_jual.jual_user_id = tbl_user.user_id');
+    //     $this->db->where('tbl_jual.jual_nofak', $id);
+    //     $kasir = $this->db->get()->result();
+
+    //     $diskonSum = 0;
+
+    //     echo $this->db->get('tbl_toko')->result()[0]->nama . "<br>";
+    //     echo "<br>";
+    //     echo $this->db->get('tbl_toko')->result()[0]->alamat . "<br>";
+    //     echo "<br>";
+    //     echo $this->db->get('tbl_toko')->result()[0]->noTelp . "<br>";
+    //     echo "------------------------------- <br>";
+
+    //     echo "No Nota : " . $transaksi[0]->jual_nofak . "<br>";
+    //     echo "Tanggal : " . $date->format('d/m/y H:i') . "<br>";
+    //     echo "Kasir   : " . $kasir[0]->kasir . "<br>";
+
+    //     if (!empty($transaksi[0]->jual_member_id)) {
+    //         $this->db->select('nama, point');
+    //         $this->db->where('id', $transaksi[0]->jual_member_id);
+    //         $pelanggan = $this->db->get('tbl_member')->result();
+    //         echo "Pelanggan    : " . $pelanggan[0]->nama . "<br>";
+    //     }
+
+    //     echo "-------------------------------";
+    //     echo "<br>";
+
+    //     foreach ($produk as $key) {
+
+    //         $diskonSum += ($key->d_jual_diskon * $key->d_jual_banyaknya) * $key->d_jual_qty;
+
+    //         echo $key->d_jual_barang_nama . "  \n";
+    //         echo "<br>";
+    //         if ($key->d_jual_diskon !== "0") {
+    //             echo $this->buatBaris4Kolom($key->d_jual_qty . " " . $key->d_jual_barang_satuan . " * " . $key->d_jual_banyaknya, "", "-" . ($key->d_jual_diskon * $key->d_jual_banyaknya) * $key->d_jual_qty, $key->d_jual_total);
+    //         } else {
+    //             echo $this->buatBaris4Kolom($key->d_jual_qty . " " . $key->d_jual_barang_satuan . " * " . $key->d_jual_banyaknya, "", "     ", $key->d_jual_total);
+    //         }
+    //         echo "<br>";
+    //     }
+
+    //     echo "-------------------------------";
+    //     echo "<br>";
+
+    //     echo "Total   : " . $transaksi[0]->jual_total . "<br>";
+    //     echo "Tunai   : " . $transaksi[0]->jual_jml_uang . "<br>";
+    //     echo "Kembali : " . $transaksi[0]->jual_kembalian . "<br>";
+    //     echo "Diskon : " .  $diskonSum . "<br>";
+    //     echo "<br>";
+
+
+    //     echo "TERIMA KASIH \n";
+    // }

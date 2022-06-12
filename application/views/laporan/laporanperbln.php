@@ -111,7 +111,6 @@
         document.getElementById('btnSidebar').click();
         document.getElementById('headTable').click();
     }
-    console.log('<?php echo base_url('laporan/readtranbln/') ?>' + bln);
 
     let url,
         lapDbar = $("#tblpenjualan").DataTable({
