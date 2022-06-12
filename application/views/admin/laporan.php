@@ -100,11 +100,64 @@
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-md-3 col-sm-3 col-12">
+                    <div class="info-box">
+                        <a href="<?php echo base_url() . 'laporan/tambahpengeluaran' ?>" class="info-box-icon btn btn-success"><i class="fas fa-edit"></i></a>
+                        <div class="info-box-content">
+                            <span class="info-box-text">Tambah Pengeluaran</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-3 col-12">
+                    <div class="info-box">
+                    <a href="#lap_pengeluaran_pertanggal" data-toggle="modal" class="info-box-icon btn btn-primary"><i class="fas fa-cart-arrow-down"></i></a>
+                        <div class="info-box-content">
+                            <span class="info-box-text">Laporan Pengeluaran</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        </div><!-- /.container-fluid -->
+</div><!-- /.container-fluid -->
 
-    </section>
-    <!-- /.content -->
+</section>
+<!-- /.content -->
+</div>
+<div class="modal fade" id="lap_pengeluaran_pertanggal" tabindex="-1" role="dialog" aria-labelledby="largeModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="myModalLabel">Pilih Tanggal Pengeluaran</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+            <form class="form-horizontal" method="post" action="<?php echo base_url() . 'laporan/gettranstgl' ?>">
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label class="control-label col-xs-3">Tanggal</label>
+                        <div class="col-xs-9">
+                            <div class="input-group date" id="reservationdate" data-target-input="nearest">
+                                <input type="text" name="tgl" class="form-control datetimepicker-input" data-target="#reservationdate" required />
+                                <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
+                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn" data-dismiss="modal" aria-hidden="true">Tutup</button>
+                    <button class="btn btn-info"><span class="fa fa-print"></span> Cetak</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 

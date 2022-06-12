@@ -559,10 +559,68 @@ class Laporan extends CI_Controller
             $this->load->view('template/header', $data);
             $this->load->view('template/sidebar', $data);
             $this->load->view('laporan/tambahpengeluaran', $data);
+
+        } else {
+            echo "Halaman tidak ditemukan";
+        }
+    }
+
+    public function savepengeluaran()
+    {
+        if ($this->session->userdata('akses') == '1' || $this->session->userdata('akses') == '2') {
+            $data = array(
+                'nama' => $this->input->post('namaPeng'),
+                'jumlah' => $this->input->post('jumPeng'),
+                'keterangan' => $this->input->post('ketPeng'),
+            );
+
+            $this->db->insert('tbl_pengeluaran', $data);
+            echo $this->session->set_flashdata('msgPengeluaran', 'save');
+            redirect('laporan/readpengeluaran');
+        } else {
+            echo "Halaman tidak ditemukan";
+        }
+    }
+
+    public function readpengeluaran()
+    {
+        if ($this->session->userdata('akses') == '1') {
+            $data = [
+                'title' => "Laporan Pengeluaran",
+                'toko' => $this->db->get('tbl_toko')->result_array()[0]['nama'],
+                'nama' => $this->session->userdata('nama'),
+            ];
+
+            $this->load->view('template/header', $data);
+            $this->load->view('template/sidebar', $data);
+            $this->load->view('laporan/readpengeluaran', $data);
             
         } else {
             echo "Halaman tidak ditemukan";
         }
+    }
+
+    public function readpengeluarantable($tanggal)
+    {
+        header('Content-type: application/json');
+        $iterasi = 1;
+        if ($this->m_laporan->getPengeluaran($tanggal)->num_rows() > 0) {
+            foreach ($this->m_laporan->getPengeluaran($tanggal)->result() as $pengeluaran) {
+                $data[] = array(
+                    'no' => $iterasi++,
+                    'tanggal' => $pengeluaran->tanggal,
+                    'nama' => $pengeluaran->nama,
+                    'jumlah' => $pengeluaran->jumlah,
+                    'keterangan' => $pengeluaran->keterangan,
+                );
+            }
+        } else {
+            $data = array();
+        }
+        $lapPengeluaran = array(
+            'data' => $data
+        );
+        echo json_encode($lapPengeluaran);
     }
 
     private function _keuntungan($nofak)

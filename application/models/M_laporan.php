@@ -149,4 +149,9 @@ class M_laporan extends CI_Model
         JOIN tbl_barang ON tbl_detail_beli.`d_beli_barang_id` = tbl_barang.`barcode`
         WHERE tbl_detail_beli.`d_beli_kode` = '$kodeBeli'");
     }
+
+    public function getPengeluaran($tanggal)
+    {
+        return $this->db->query("SELECT * FROM tbl_pengeluaran WHERE DATE(tanggal)='$tanggal'");
+    }
 }
