@@ -6,8 +6,8 @@
             <div class="row mb-2">
                 <div class="col-sm-6">
                     <h1><?= $title; ?></h1>
-                    <h5>Total Penjualan <?= $totalJual; ?></h5>
-                    <h5>Total Keuntungan <?= $keuntungan; ?></h5>
+                    <h5>Total Penjualan Rp <?= rupiah2($totalJual); ?></h5>
+                    <h5>Total Keuntungan Rp <?= rupiah2($keuntungan); ?></h5>
                 </div>
             </div>
         </div><!-- /.container-fluid -->
@@ -65,6 +65,7 @@
                             <th>Qty</th>
                             <th>Satuan</th>
                             <th>Diskon</th>
+                            <th>Banyaknya</th>
                             <th>Total</th>
                             <th>Keuntungan</th>
                         </tr>

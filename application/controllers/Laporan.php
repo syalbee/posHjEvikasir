@@ -118,8 +118,9 @@ class Laporan extends CI_Controller
                 <td>' . $items['d_jual_qty'] . ' </td>
                 <td>' . $items['d_jual_barang_satuan'] . ' </td>
                 <td>' . $items['d_jual_diskon'] . ' </td>
+                <td>' . $items['d_jual_banyaknya'] . ' </td>
                 <td>' . $items['d_jual_total'] . ' </td>
-                <td>' . $this->_keuntunganbrg($items['d_jual_barang_id'], $items['d_jual_nofak']) . ' </td>
+                <td>' . $this->_keuntunganbrg($items['d_jual_nofak'],$items['d_jual_id']) . ' </td>
             </tr>';
             $i++;
         }
@@ -204,8 +205,8 @@ class Laporan extends CI_Controller
                 'title' => "Laporan Penjualan Harian - " . date("D-M-Y"),
                 'toko' => $this->db->get('tbl_toko')->result_array()[0]['nama'],
                 'nama' => $this->session->userdata('nama'),
-                'totalJual' => "Rp. " . $this->_pendapatanJual(date("Y-m-d"))['total'],
-                'keuntungan' => "Rp. ". $this->_getKeuntungan(date("Y-m-d"))
+                'totalJual' => $this->_pendapatanJual(date("Y-m-d"))['total'],
+                'keuntungan' =>  $this->_getKeuntungan(date("Y-m-d"))
             ];
 
             $this->load->view('template/header', $data);
@@ -224,8 +225,8 @@ class Laporan extends CI_Controller
                 'title' => "Laporan Penjualan",
                 'toko' => $this->db->get('tbl_toko')->result_array()[0]['nama'],
                 'nama' => $this->session->userdata('nama'),
-                'totalJual' => "Rp. " . $this->_pendapatanJualall()['total'],
-                'keuntungan' => "Rp. ". $this->_getKeuntunganall()
+                'totalJual' => $this->_pendapatanJualall()['total'],
+                'keuntungan' => $this->_getKeuntunganall()
             ];
 
             $this->load->view('template/header', $data);
@@ -248,8 +249,8 @@ class Laporan extends CI_Controller
                 'title' => "Laporan Penjualan Pertanggal "  . $tanggal,
                 'toko' => $this->db->get('tbl_toko')->result_array()[0]['nama'],
                 'nama' => $this->session->userdata('nama'),
-                'totalJual' => "Rp. " . $this->_pendapatanJual($tanggal)['total'],
-                'keuntungan' => "Rp. ". $this->_getKeuntungan($tanggal),
+                'totalJual' => $this->_pendapatanJual($tanggal)['total'],
+                'keuntungan' =>  $this->_getKeuntungan($tanggal),
                 'tgl' => $tanggal
             ];
 
@@ -387,8 +388,8 @@ class Laporan extends CI_Controller
                 'title' => "Laporan Penjualan Perbulan " . $bulan,
                 'toko' => $this->db->get('tbl_toko')->result_array()[0]['nama'],
                 'nama' => $this->session->userdata('nama'),
-                'totalJual' => "Rp. " . $this->_keuntunganbln($bulan)[0]['total'],
-                'keuntungan' => "Rp. " . $this-> _getKeuntunganbln($bulan),
+                'totalJual' => $this->_keuntunganbln($bulan)[0]['total'],
+                'keuntungan' => $this-> _getKeuntunganbln($bulan),
                 'bln' =>  str_replace(" ", "_", $bulan),
             ];
 
@@ -439,8 +440,8 @@ class Laporan extends CI_Controller
                 'title' => "Laporan Penjualan Pertahun " . $tahun,
                 'toko' => $this->db->get('tbl_toko')->result_array()[0]['nama'],
                 'nama' => $this->session->userdata('nama'),
-                'totalJual' => "Rp. " . $this->m_laporan->get_total_jual_pertahun($tahun)->result_array()[0]['total'],
-                'keuntungan' => "Rp. " . $this-> _getKeuntunganthn($tahun),
+                'totalJual' => $this->m_laporan->get_total_jual_pertahun($tahun)->result_array()[0]['total'],
+                'keuntungan' => $this-> _getKeuntunganthn($tahun),
                 'thn' =>  str_replace(" ", "_", $tahun),
             ];
 
@@ -484,10 +485,10 @@ class Laporan extends CI_Controller
     }
 
 
-    public function _keuntunganbrg($idbarang, $idTR)
+    private function _keuntunganbrg($idTR, $idbarang)
     {
-        $dataKen = $this->db->query("SELECT * FROM tbl_detail_jual WHERE d_jual_nofak= '$idTR' AND d_jual_barang_id = '$idbarang'")->result_array()[0];
-        return $dataKen['d_jual_total'] - ($dataKen['d_jual_barang_harpok'] * $dataKen['d_jual_qty']);
+        $dataKen = $this->db->query("SELECT * FROM tbl_detail_jual WHERE d_jual_nofak= '$idTR' AND d_jual_id = '$idbarang'")->result_array()[0];
+        return $dataKen['d_jual_total'] - ($dataKen['d_jual_barang_harpok'] * $dataKen['d_jual_banyaknya']);
     }
 
     public function lapbelibar()
@@ -554,14 +555,13 @@ class Laporan extends CI_Controller
     {
         $this->db->where('d_jual_nofak', $nofak);
         $dataKen = $this->db->get('tbl_detail_jual')->result();
-        $sumTotal = 0;
         $sumModal = 0;
+
         foreach ($dataKen as $dt) {
-            $sumTotal += $dt->d_jual_total;
-            $sumModal += $dt->d_jual_barang_harpok * $dt->d_jual_qty;
+            $sumModal += $dt->d_jual_barang_harpok * $dt->d_jual_banyaknya;
         }
 
-        return $sumTotal - $sumModal;
+        return $dataKen[0]->d_jual_total - $sumModal;
     }
 
     public function _keuntunganbln($bln)
@@ -647,4 +647,19 @@ class Laporan extends CI_Controller
 
         return $dataKen[0]['total'] - $sumModal;
     }
+
+
+    public function _kenperTransaksi()
+    {
+       
+    }
+
+    public function coba($nofak)
+    {
+        $this->db->where('d_jual_nofak', $nofak);
+        $dataKen = $this->db->get('tbl_detail_jual')->result();
+
+        var_dump($dataKen[0]->d_jual_total);
+    }
+   
 }

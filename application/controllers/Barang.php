@@ -167,19 +167,6 @@ class Barang extends CI_Controller
         }
     }
 
-    // public function get_barcode()
-    // {
-    //     header('Content-type: application/json');
-    //     $barcode = $this->input->post('barcode');
-    //     $search = $this->m_barang->getBarcode($barcode);
-    //     foreach ($search as $barcode) {
-    //         $data[] = array(
-    //             'id' => $barcode->barang_id,
-    //             'text' => $barcode->barang_nama
-    //         );
-    //     }
-    //     echo json_encode($data);
-    // }
 
     public function get_barcode()
     {

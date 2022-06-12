@@ -6,8 +6,8 @@
             <div class="row mb-2">
                 <div class="col-sm-6">
                     <h1><?= $title; ?></h1>
-                    <h5>Total Penjualan Hari Ini <?= $totalJual; ?></h5>
-                    <h5>Total Keuntungan Hari Ini <?= $keuntungan; ?></h5>
+                    <h5>Total Penjualan Hari Ini Rp <?= rupiah2($totalJual); ?></h5>
+                    <h5>Total Keuntungan Hari Ini Rp <?= rupiah2($keuntungan); ?></h5>
                 </div>
             </div>
         </div><!-- /.container-fluid -->
@@ -45,7 +45,6 @@
 </div>
 <!-- /.content-wrapper -->
 
-<!-- Modal Add -->
 <div class="modal fade" id="LAPmodalDetail">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -65,6 +64,7 @@
                             <th>Qty</th>
                             <th>Satuan</th>
                             <th>Diskon</th>
+                            <th>Banyaknya</th>
                             <th>Total</th>
                             <th>Keuntungan</th>
                         </tr>

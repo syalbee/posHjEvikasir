@@ -79,7 +79,7 @@
             <form id="formBayar" method="POST" action="<?= base_url('transaksi/simpan_penjualan'); ?>">
                 <table>
                     <tr>
-                        <td style="width:760px;" rowspan="2"><button type="submit" class="btn btn-info btn-lg">Simpan</button></td>
+                        <td style="width:760px;" rowspan="2"><button type="submit" class="btn btn-success btn-lg">Simpan</button></td>
                         <th style="width:140px;">Total Belanja(Rp)</th>
                         <th style="text-align:right;width:140px;"><input type="text" id="total2" class="form-control input-sm" style="text-align:right;margin-bottom:5px;" readonly></th>
                         <input type="hidden" id="total" name="total" class="form-control input-sm" style="text-align:right;margin-bottom:5px;" readonly>
@@ -150,9 +150,10 @@
                     <!-- <label>QTY :</label> -->
                     <label for="qtyBarang">Qty</label>
                     <input id="qtyBarang" name="qtyBarang" type="text" onkeydown="addKeranjang()" class="form-control">
-
-                    <label for="jumlahTRk">Banyaknya</label>
-                    <input id="jumlahTRk" name="jumlahTRk" type="text" onkeydown="addKeranjang()" class="form-control">
+                    <div id="divBanyaknya">
+                        <label for="jumlahTRk">Banyaknya</label>
+                        <input id="jumlahTRk" name="jumlahTRk" type="text" onkeydown="addKeranjang()" class="form-control">
+                    </div>
                 </div>
                 <!-- <button class="btn btn-success" onclick="addKeranjangkilo()" type="button">Tambah</button> -->
                 <!-- </form> -->
@@ -330,20 +331,20 @@
         }
     }
 
-
     // reload dat from chart
     $('#detail_cart').load("<?= site_url('transaksi/read'); ?>");
     resultHasil();
     window.onload = onLoadPage();
 
-
     // Get barang on load
     function onLoadPage() {
+        // document.getElementById('btnSidebar').click();
         x.style.display = "none";
         x1.style.display = "none";
         x2.style.display = "none";
         x3.style.display = "none";
         x4.style.display = "none";
+
         $(document).on('select2:open', () => {
             document.querySelector('.select2-search__field').focus();
         });
@@ -375,6 +376,8 @@
     }
 
     // Buat nampilin modal setelah search barang
+    var xx = document.getElementById("divBanyaknya");
+    xx.style.display = "none";
     $("#kode_brg")[0].focus();
     $(document).ready(function() {
         $("#kode_brg").focus();
@@ -412,6 +415,7 @@
             if (e.key === "F4" || e.key === "F9") {
                 cekGrosir = true;
                 $("#jenisBrg").html("Jenis Barang Eceran");
+                xx.style.display = "block";
                 e.preventDefault()
             }
         });
@@ -449,6 +453,7 @@
                     $("#jenisBrg").html("Jenis Barang Grosir");
                     $('#detail_cart').load("<?= site_url('transaksi/read'); ?>");
                     resultHasil();
+                    xx.style.display = "none";
                     $("#showBRGKg").modal("hide");
                     $('#kode_brg').empty();
                 },

@@ -50,7 +50,7 @@
                                 <?php foreach ($sup->result_array() as $s) { ?>
                                     <option value="<?= $s['suplier_id']; ?>"><?= $s['suplier_nama']; ?></option>
                                 <?php } ?>
-                            </select>
+                            </select>                                                   
                         </div>
                         <div class="row">
                             <div class="col">
@@ -60,7 +60,7 @@
 
                             <div class="col">
                                 <label>Banyaknya Jumlah Eceran ke Grosir</label>
-                                <input name="min_stok" class="form-control" type="number" placeholder="Banyaknya Jumlah Eceran ke Grosir" required>
+                                <input name="min_stok" class="form-control" type="text" placeholder="Banyaknya Jumlah Eceran ke Grosir" required>
                             </div>
                         </div>
                         <br>

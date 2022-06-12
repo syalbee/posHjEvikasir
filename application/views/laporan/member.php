@@ -63,6 +63,7 @@
                             <th>Qty</th>
                             <th>Satuan</th>
                             <th>Diskon</th>
+                            <th>Banyaknya</th>
                             <th>Total</th>
                             <th>Keuntungan</th>
                         </tr>

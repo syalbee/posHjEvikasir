@@ -60,7 +60,7 @@
 
                             <div class="col">
                                 <label>Banyaknya Jumlah Eceran ke Grosir</label>
-                                <input value="<?= $barang[0]['barang_min_stok']; ?>" name="min_stok" class="form-control" type="number" placeholder="Banyaknya Jumlah Eceran ke Grosir" required>
+                                <input value="<?= $barang[0]['barang_min_stok']; ?>" name="min_stok" class="form-control" type="text" placeholder="Banyaknya Jumlah Eceran ke Grosir" required>
                             </div>
                         </div>
                         <br>

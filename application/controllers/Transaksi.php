@@ -81,7 +81,7 @@ class Transaksi extends CI_Controller
 						'name'     => $i['barang_nama'],
 						'satuan'   => $i['barang_satuan'],
 						'jenis'	   => "grosir",
-						'harpok'   => $i['barang_harpok_grosir'],
+						'harpok'   => $i['barang_harpok_grosir'] * $this->input->post('Barangqty'),
 						'price'    => intval($i['barang_harjul_grosir']) * $banyaknya,
 						'disc'     => 0,
 						'qty'      => $this->input->post('Barangqty'),
@@ -95,12 +95,12 @@ class Transaksi extends CI_Controller
 						'name'     => $i['barang_nama'],
 						'satuan'   => $i['satuan_turunan'],
 						'jenis'	   => "eceran",
-						'harpok'   => $i['barang_harpok_eceran'],
-						'price'    => intval($i['barang_harjul_grosir']) * $banyaknya,
+						'harpok'   => $i['barang_harpok_eceran']* $this->input->post('Barangqty'),
+						'price'    => intval($i['barang_harjul_eceran']) * $banyaknya,
 						'disc'     => 0,
 						'qty'      => $this->input->post('Barangqty'),
 						'banyaknya' => $banyaknya,
-						'amount'	=> intval($i['barang_harjul_grosir'])
+						'amount'	=> intval($i['barang_harjul_eceran'])
 					);
 				}
 				// untuk member
@@ -112,12 +112,12 @@ class Transaksi extends CI_Controller
 						'name'     => $i['barang_nama'],
 						'satuan'   => $i['barang_satuan'],
 						'jenis'	   => "grosir",
-						'harpok'   => $i['barang_harpok_grosir'],
-						'price'    => intval($i['barang_harjul_grosir']) * $banyaknya,
+						'harpok'   => $i['barang_harpok_grosir']* $this->input->post('Barangqty'),
+						'price'    => intval($i['barang_harjul_grosir_m']) * $banyaknya,
 						'disc'     => 0,
 						'qty'      => $this->input->post('Barangqty'),
 						'banyaknya' => $banyaknya,
-						'amount'	=> intval($i['barang_harjul_grosir'])
+						'amount'	=> intval($i['barang_harjul_grosir_m'])
 					);
 				} else if ($this->input->post('jenisTR') === "eceran") {
 					$data = array(
@@ -126,12 +126,12 @@ class Transaksi extends CI_Controller
 						'name'     => $i['barang_nama'],
 						'satuan'   => $i['satuan_turunan'],
 						'jenis'	   => "eceran",
-						'harpok'   => $i['barang_harpok_eceran'],
-						'price'    => intval($i['barang_harjul_grosir']) * $banyaknya,
+						'harpok'   => $i['barang_harpok_eceran'] * $this->input->post('Barangqty'),
+						'price'    => intval($i['barang_harjul_eceran_m']) * $banyaknya,
 						'disc'     => 0,
 						'qty'      => $this->input->post('Barangqty'),
 						'banyaknya' => $banyaknya,
-						'amount'	=> intval($i['barang_harjul_grosir'])
+						'amount'	=> intval($i['barang_harjul_eceran_m'])
 					);
 				}
 			}
@@ -221,6 +221,7 @@ class Transaksi extends CI_Controller
 
 			$jml_uang = str_replace(",", "", $this->input->post('jml_uang'));
 			$kembalian = $jml_uang - $total;
+			
 			if (!empty($total) && !empty($jml_uang)) {
 				if ($jml_uang < $total) {
 					echo $this->session->set_flashdata('msgTransaksi', 'gagal');
